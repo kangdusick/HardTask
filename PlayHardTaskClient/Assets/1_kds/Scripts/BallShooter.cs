@@ -1,34 +1,110 @@
 using Cysharp.Threading.Tasks;
-using Sirenix.OdinInspector;
-using Sirenix.Utilities;
 using SRF;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Assertions.Must;
+
+class UnionFind
+{
+    int[] parent;
+    int[] rank;
+    int[] size;
+
+    public UnionFind(int n)
+    {
+        parent = new int[n];
+        rank = new int[n];
+        size = new int[n];
+        for (int i = 0; i < n; i++)
+        {
+            parent[i] = i;
+            size[i] = 1;
+        }
+    }
+
+    public int Find(int x)
+    {
+        if (parent[x] != x)
+        {
+            parent[x] = Find(parent[x]);
+        }
+        return parent[x];
+    }
+
+    public void Union(int x, int y)
+    {
+        int rootX = Find(x);
+        int rootY = Find(y);
+
+        if (rootX == rootY) return;
+
+        if (rank[rootX] < rank[rootY])
+        {
+            parent[rootX] = rootY;
+            size[rootY] += size[rootX];
+        }
+        else if (rank[rootX] > rank[rootY])
+        {
+            parent[rootY] = rootX;
+            size[rootX] += size[rootY];
+        }
+        else
+        {
+            parent[rootY] = rootX;
+            rank[rootX]++;
+            size[rootX] += size[rootY];
+        }
+    }
+
+    public List<int> GetUnionList(int x)
+    {
+        var list = new List<int>();
+        var rootx = Find(x);
+        for (int i = 0; i < parent.Length; i++)
+        {
+            if (Find(parent[i]) == rootx)
+            {
+                list.Add(i);
+            }
+        }
+        return list;
+    }
+    public int GetSize(int x)
+    {
+        int rootx = Find(x);
+        return size[rootx];
+    }
+}
 
 public class BallShooter : MonoBehaviour
 {
+    public static BallShooter Instance;
     [SerializeField] private RectTransform _shootingStartPoint;
-    [SerializeField] private RectTransform point1;
-    [SerializeField] private RectTransform point2;
+    [SerializeField] private LineRenderer _shootingLineRenderer;
+    private List<HexBlock> attatchmentHexBlockList = new();
     private HexBlockContainer _destineHexBlockContainer = null;
-    private List<Vector2> shootingBallMovingRoute = new();
+    private List<Vector3> shootingBallMovingRoute = new();
     private const float shootingBallSpeed = 1000f;
+    public bool isWhileShooting;
     private void Awake()
     {
+        Instance = this;
+        isWhileShooting = false;
+        _shootingLineRenderer.gameObject.SetActive(false);
         TouchManager.Instance.OnTouchIng+= SetDestineHexBlockContainer;
         TouchManager.Instance.OnTouchUp += ShootingBall;
     }
 
     void SetDestineHexBlockContainer(Vector2 screenPos) //마우스 클릭 중에 조준선이 활성화되며 구슬이 어디에 도착할지 표시해준다.
     {
-        shootingBallMovingRoute.Clear();
-        if (!ReferenceEquals(_destineHexBlockContainer, null))
+        if(isWhileShooting)
         {
-            _destineHexBlockContainer.EnableHintEffect(false);
-            _destineHexBlockContainer = null;
+            return;
         }
+        shootingBallMovingRoute.Clear();
+        shootingBallMovingRoute.Add(_shootingStartPoint.position);
+        EnableDestinePositionHint(false);
 
         var laserDirection = TouchManager.Instance.mouseWorldPos - _shootingStartPoint.transform.position;
         laserDirection.z = 0f;
@@ -37,7 +113,6 @@ public class BallShooter : MonoBehaviour
         if(!ReferenceEquals(hit.collider,null)) 
         {
             shootingBallMovingRoute.Add(hit.point);
-            point1.transform.position = hit.point;
             if (hit.collider.gameObject.layer == (int)ELayers.Wall) //벽과 충돌한 경우 한번 반사된다.
             {
                 // 반사된 레이저 발사
@@ -50,7 +125,6 @@ public class BallShooter : MonoBehaviour
 
                 if (!ReferenceEquals(hitByReflect.collider,null))
                 {
-                    point2.transform.position = hitByReflect.point;
                     shootingBallMovingRoute.Add(hitByReflect.point);
                     _destineHexBlockContainer = GetBallDestineContainer(hitByReflect);
                 }
@@ -64,22 +138,163 @@ public class BallShooter : MonoBehaviour
         if(!ReferenceEquals(_destineHexBlockContainer,null))
         {
             shootingBallMovingRoute.Add(_destineHexBlockContainer.transform.position);
-            _destineHexBlockContainer.EnableHintEffect(true);
+            EnableDestinePositionHint(true);
+        }
+    }
+    private void EnableDestinePositionHint(bool isEnable)
+    {
+        if (!ReferenceEquals(_destineHexBlockContainer, null))
+        {
+            if (isEnable)
+            {
+                _destineHexBlockContainer.EnableHintEffect(true);
+                _shootingLineRenderer.gameObject.SetActive(true);
+                _shootingLineRenderer.positionCount = shootingBallMovingRoute.Count - 1;
+                _shootingLineRenderer.SetPositions(shootingBallMovingRoute.GetRange(0, shootingBallMovingRoute.Count - 1).ToArray());
+
+            }
+            else
+            {
+                _shootingLineRenderer.gameObject.SetActive(false);
+                _destineHexBlockContainer.EnableHintEffect(false);
+                _destineHexBlockContainer = null;
+
+            }
         }
     }
     private async void ShootingBall(Vector2 screenPos)
     {
-        if(!ReferenceEquals(_destineHexBlockContainer,null))
+        if(isWhileShooting)
         {
+            return;
+        }
+        if (!ReferenceEquals(_destineHexBlockContainer,null))
+        {
+            isWhileShooting = true;
+            _shootingLineRenderer.gameObject.SetActive(false);
             var shootedBall = PoolableManager.Instance.Instantiate<HexBlock>(EPrefab.HexBlock, _shootingStartPoint.position);
             shootedBall.Init(HexBlockContainer.EColorList.Random(), EBlockType.normal);
-            shootedBall.SetHexBlockContainerWithMove(_destineHexBlockContainer, shootingBallSpeed, shootingBallMovingRoute);
+            await shootedBall.SetHexBlockContainerWithMove(_destineHexBlockContainer, shootingBallSpeed, shootingBallMovingRoute);
+            EnableDestinePositionHint(false);
+            await FindMatchAndDestroyBalls(shootedBall);
+            isWhileShooting = false;
+        }
+    }
+    private async UniTask FindMatchAndDestroyBalls(HexBlock shootedBall)
+    {
+        List<UniTask> uniTaskList= new List<UniTask>();
+        UnionFind unionFindSameColor = new UnionFind(HexBlockContainer.hexBlockContainerList.Count + 1);
+        //shootedBall과 같은 색상의 볼이 3개 이상이면 파괴
+        UnionSameColorHexBlocks(shootedBall.hexBlockContainer, unionFindSameColor);
+        var unionedHexBlockList= GetUnionedHexBlockList(shootedBall,unionFindSameColor);
+        if(unionedHexBlockList.Count>=3)
+        {
+            foreach (var item in unionedHexBlockList)
+            {
+                uniTaskList.Add(item.Damaged());
+            }
+        }
+        await UniTask.WhenAll(uniTaskList);
+        uniTaskList.Clear();
+        //attatch포인트와 연결되어있지 않은 그룹 모두 낙하파괴
+        List<HexBlock> destroyWithFall = new();
+        FindAllAttatchmentPoint();
+        UnionFind unionFindAttatchmentPoint = new UnionFind(HexBlockContainer.hexBlockContainerList.Count + 1);
+        foreach (var item in attatchmentHexBlockList)
+        {
+            UnionAroundAttatchmentPoint(item.hexBlockContainer, unionFindAttatchmentPoint);
+        }
+        for(int i = 0; i< HexBlockContainer.hexBlockContainerList.Count;i++)
+        {
+            HexBlock hexBlock = HexBlockContainer.hexBlockContainerList[i].hexBlock;
+            if (unionFindAttatchmentPoint.GetSize(i) <=2 && !ReferenceEquals(hexBlock,null))
+            {
+                destroyWithFall.Add(hexBlock);
+            }
+        }
+
+        foreach (var item in destroyWithFall)
+        {
+            uniTaskList.Add(item.Damaged());
+        }
+        await UniTask.WhenAll(uniTaskList);
+    }
+    private void FindAllAttatchmentPoint()
+    {
+        if (attatchmentHexBlockList.Count == 0)
+        {
+            foreach (var item in HexBlockContainer.hexBlockContainerList)
+            {
+                if(!ReferenceEquals(item.hexBlock,null) && item.hexBlock.eBlockType == EBlockType.attatchPoint || item.hexBlock.eBlockType == EBlockType.attatchPoint_Spawn)
+                {
+                    attatchmentHexBlockList.Add(item.hexBlock);
+                }
+            }
+        }
+    }
+    private List<HexBlock> GetUnionedHexBlockList(HexBlock standardHexBlock, UnionFind unionFind )
+    {
+        List<HexBlock> unionedHexBlockList = new();
+        var unionedIndexList = unionFind.GetUnionList(HexBlockContainer.hexBlockContainerList.IndexOf(standardHexBlock.hexBlockContainer));
+        foreach (var item in unionedIndexList)
+        {
+            unionedHexBlockList.Add(HexBlockContainer.hexBlockContainerList[item].hexBlock);
+        }
+        return unionedHexBlockList;
+    }
+    private void UnionAroundAttatchmentPoint(HexBlockContainer hexBlockContainer, UnionFind unionFind)
+    {
+        var neighborList = hexBlockContainer.GetNeighborContainerBlockList();
+        var standardHexBlockContainerIndex = HexBlockContainer.hexBlockContainerList.IndexOf(hexBlockContainer);
+        foreach (var neighborHexBlockContainer in neighborList)
+        {
+            if (ReferenceEquals(neighborHexBlockContainer.hexBlock, null))
+            {
+                continue;
+            }
+            var neighborHexBlockContainerIndex = HexBlockContainer.hexBlockContainerList.IndexOf(neighborHexBlockContainer);
+            if ((unionFind.Find(standardHexBlockContainerIndex) != unionFind.Find(neighborHexBlockContainerIndex)))
+            {
+                unionFind.Union(standardHexBlockContainerIndex, neighborHexBlockContainerIndex);
+                UnionSameColorHexBlocks(neighborHexBlockContainer, unionFind);
+            }
+        }
+    }
+    private void UnionSameColorHexBlocks(HexBlockContainer hexBlockContainer, UnionFind unionFind)
+    {
+        bool IsCanUnion(HexBlock standardContainer, HexBlock neighborhexBlock)
+        {
+                if (standardContainer.eColor == EColor.none || neighborhexBlock.eColor == EColor.none)
+                {
+                    return false;
+                }
+                if (standardContainer.eColor == neighborhexBlock.eColor)
+                {
+                    return true;
+                }
+                return false;
+        }
+        var neighborList = hexBlockContainer.GetNeighborContainerBlockList();
+        var standardHexBlockContainerIndex = HexBlockContainer.hexBlockContainerList.IndexOf(hexBlockContainer);
+        foreach (var neighborHexBlockContainer in neighborList)
+        {
+            if(ReferenceEquals(neighborHexBlockContainer.hexBlock,null))
+            {
+                continue;
+            }
+            var neighborHexBlockContainerIndex = HexBlockContainer.hexBlockContainerList.IndexOf(neighborHexBlockContainer);
+
+            if ((unionFind.Find(standardHexBlockContainerIndex) != unionFind.Find(neighborHexBlockContainerIndex)) && IsCanUnion(hexBlockContainer.hexBlock, neighborHexBlockContainer.hexBlock))
+            {
+                unionFind.Union(standardHexBlockContainerIndex, neighborHexBlockContainerIndex);
+                UnionSameColorHexBlocks(neighborHexBlockContainer, unionFind);
+            }
         }
     }
     private HexBlockContainer GetBallDestineContainer(RaycastHit2D raycastHit2D)
     {
         var detectedContainer = raycastHit2D.collider.gameObject.GetCashComponent<HexBlockContainer>();
-        foreach (var item in HexBlockContainer.GetNeighborContainerBlockList(detectedContainer))
+        foreach (var item in detectedContainer.GetNeighborContainerBlockList())
         {
             if (ReferenceEquals(item.hexBlock,null) &&
                 GameUtil.DistanceSquare2D(item.transform.position,raycastHit2D.point) <= (HexBlockContainer.hexHeight/2f) * (HexBlockContainer.hexHeight / 2f))

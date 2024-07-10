@@ -54,7 +54,6 @@ public class BlockSpawnLine : MonoBehaviour
             {
                 break; //라인이 꽉 차있다.
             }
-            Debug.Log(headIndex);
 
             for (int i = headIndex; i >= 0; i--)
             {

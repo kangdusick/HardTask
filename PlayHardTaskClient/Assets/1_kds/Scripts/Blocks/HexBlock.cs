@@ -75,7 +75,7 @@ public class HexBlock : MonoBehaviour
             y = hexBlockContainer.y;
         }
     }
-    public async UniTask SetHexBlockContainerWithMove(HexBlockContainer hexBlockContainer, float moveSpeed, List<Vector2> movingRoute = null, bool isMoveDirectly = false, bool isTimeBase = false)
+    public async UniTask SetHexBlockContainerWithMove(HexBlockContainer hexBlockContainer, float moveSpeed, List<Vector3> movingRoute = null, bool isMoveDirectly = false, bool isTimeBase = false)
     {
         ChangeHexBlockContainer(hexBlockContainer);
 

@@ -10,8 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7762826417536684326}
   - component: {fileID: 2050618936152199981}
-  - component: {fileID: 3134306719824303343}
-  - component: {fileID: 2405500176275616301}
   - component: {fileID: 3459720470165410592}
   m_Layer: 8
   m_Name: HexBlockContainer
@@ -58,44 +56,6 @@ MonoBehaviour:
   _hintEffectAnim: {fileID: 6463189912748673607}
   x: 0
   y: 0
---- !u!222 &3134306719824303343
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 619610561108433734}
-  m_CullTransparentMesh: 1
---- !u!114 &2405500176275616301
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 619610561108433734}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 0.49056602, g: 0.46511212, b: 0.46511212, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: -2135585597343286014, guid: 5aa8b770bc43046bc8d993d0d5b7f4a5, type: 3}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
 --- !u!60 &3459720470165410592
 PolygonCollider2D:
   m_ObjectHideFlags: 0
