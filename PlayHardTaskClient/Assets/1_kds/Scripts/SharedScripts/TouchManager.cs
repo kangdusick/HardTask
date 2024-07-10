@@ -104,9 +104,9 @@ public class TouchManager : MonoBehaviour
 
         foreach (var hit in mousHits)
         {
-            OnTouchIngLayer[(ELayers)hit.collider.gameObject.layer].Invoke(hit, screenPos);
+            OnTouchIngLayer[(ELayers)hit.collider.gameObject.layer]?.Invoke(hit, screenPos);
         }
-        OnTouchIng.Invoke(screenPos);
+        OnTouchIng?.Invoke(screenPos);
     }
     private void TouchDown(Vector2 screenPos)
     {
@@ -117,9 +117,9 @@ public class TouchManager : MonoBehaviour
 
         foreach (var hit in mousHits)
         {
-            OnTouchDownLayer[(ELayers)hit.collider.gameObject.layer].Invoke(hit, screenPos);
+            OnTouchDownLayer[(ELayers)hit.collider.gameObject.layer]?.Invoke(hit, screenPos);
         }
-        OnTouchDown.Invoke(screenPos);
+        OnTouchDown?.Invoke(screenPos);
     }
     private void TouchUp(Vector2 screenPos)
     {
@@ -130,9 +130,9 @@ public class TouchManager : MonoBehaviour
 
         foreach (var hit in mousHits)
         {
-            OnTouchUpLayer[(ELayers)hit.collider.gameObject.layer].Invoke(hit, screenPos);
+            OnTouchUpLayer[(ELayers)hit.collider.gameObject.layer]?.Invoke(hit, screenPos);
         }
-        OnTouchUp.Invoke(screenPos);
+        OnTouchUp?.Invoke(screenPos);
     }
     private void OnSceneUnLoaded(Scene scene)
     {

@@ -20,7 +20,7 @@ public class ObservableHashSet<T> : IDisposable, IEnumerable<T>
 
     protected virtual void Changed()
     {
-        OnChanged.Invoke();
+        OnChanged?.Invoke();
     }
 
     public int Count => set.Count;
@@ -46,8 +46,8 @@ public class ObservableHashSet<T> : IDisposable, IEnumerable<T>
         bool added = set.Add(item);
         if (added)
         {
-            OnAdded.Invoke();
-            OnAddedItem.Invoke(item);
+            OnAdded?.Invoke();
+            OnAddedItem?.Invoke(item);
             Changed();  // Call Changed when an item is added
         }
         return added;
@@ -63,7 +63,7 @@ public class ObservableHashSet<T> : IDisposable, IEnumerable<T>
         bool removed = set.Remove(item);
         if (removed)
         {
-            OnRemovedItem.Invoke(item);
+            OnRemovedItem?.Invoke(item);
             Changed();  // Call Changed when an item is removed
         }
         return removed;
@@ -115,7 +115,7 @@ public class ObservableList<T> : IDisposable, IEnumerable<T>
             if (!EqualityComparer<T>.Default.Equals(oldItem, value))
             {
                 list[index] = value;
-                OnItemUpdated.Invoke(oldItem, value, index);
+                OnItemUpdated?.Invoke(oldItem, value, index);
                 Changed();  // Call Changed when an item is updated
             }
         }
@@ -123,7 +123,7 @@ public class ObservableList<T> : IDisposable, IEnumerable<T>
 
     protected virtual void Changed()
     {
-        OnChanged.Invoke();
+        OnChanged?.Invoke();
     }
 
     public void Clear()
@@ -141,7 +141,7 @@ public class ObservableList<T> : IDisposable, IEnumerable<T>
     public void Add(T item)
     {
         list.Add(item);
-        OnAddedItem.Invoke(item);  // Notify subscribers that an item was added
+        OnAddedItem?.Invoke(item);  // Notify subscribers that an item was added
         Changed();  // Call Changed when an item is added
     }
 
@@ -155,7 +155,7 @@ public class ObservableList<T> : IDisposable, IEnumerable<T>
         bool removed = list.Remove(item);
         if (removed)
         {
-            OnRemovedItem.Invoke(item);
+            OnRemovedItem?.Invoke(item);
             Changed();  // Call Changed when an item is removed
         }
         return removed;
@@ -237,12 +237,12 @@ public class ObservableDictionary<TKey, TValue> : IDisposable, IEnumerable<KeyVa
 
     protected virtual void ChangedValue(TKey key)
     {
-        OnChangedItem.Invoke(key);
+        OnChangedItem?.Invoke(key);
     }
 
     protected virtual void Changed()
     {
-        OnChanged.Invoke();
+        OnChanged?.Invoke();
     }
 
     public void Add(TKey key, TValue value)
