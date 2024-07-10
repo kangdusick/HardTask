@@ -141,7 +141,6 @@ public enum EDirIndex
 public class HexBlockContainer : CustomColliderMonobehaviour
 {
     public static HexBlockContainer[,] hexBlockContainerMatrix;
-    private static List<HexBlockContainer> _highestHexBlockContainerEachColumnList;
     public static readonly List<EColor> EColorList = new List<EColor>() { EColor.blue, EColor.red, EColor.yellow };
     public readonly static (int x, int y)[] dirList = new (int x, int y)[6] { (2, 0), (-2, 0), (1, 1), (-1, -1), (1, -1), (-1, 1) };
     public HexBlock hexBlock;
@@ -151,7 +150,6 @@ public class HexBlockContainer : CustomColliderMonobehaviour
     public int y;
     public const float hexWidth = 88.28125f;
     public const float hexHeight = 100f;
-    const float newBlockMoveSpeed = 600f;
     public static bool IsAllBlockGenerated
     {
         get 
@@ -179,52 +177,9 @@ public class HexBlockContainer : CustomColliderMonobehaviour
             _hintEffectAnim.DOPause();
         }
     }
-    
-    public static HexBlockContainer GetTopEmptyHexBlockContainerInSameColum(int xIndex)
-    {
-        HexBlockContainer topContainer = null;
-        bool isEmptyContainerExist = false;
-        for (int j = hexBlockContainerMatrix.GetLength(1) - 1; j >= 0; j--)
-        {
-            if (!ReferenceEquals(hexBlockContainerMatrix[xIndex, j], null))
-            {
-                topContainer = hexBlockContainerMatrix[xIndex, j];
-                break;
-            }
-        }
-        for (int j = hexBlockContainerMatrix.GetLength(1) - 1; j >= 0; j--)
-        {
-            if (!ReferenceEquals(hexBlockContainerMatrix[xIndex, j], null) && topContainer.y >= hexBlockContainerMatrix[xIndex, j].y && ReferenceEquals(hexBlockContainerMatrix[xIndex, j].hexBlock, null))
-            {
-                topContainer = hexBlockContainerMatrix[xIndex, j];
-                isEmptyContainerExist = true;
-                break;
-            }
-        }
-        if (!isEmptyContainerExist)
-        {
-            topContainer = null;
-        }
-        return topContainer;
-    }
-    public static HexBlockContainer GetEmptyUpperHexBlockContainerInSameColum(HexBlockContainer emptyBlockContainer) //빈 블럭 위에 떠있는 가장 가까운 블럭 찾기
-    {
-        HexBlockContainer upperEmptyBlock = null;
-        var xIndex = emptyBlockContainer.x;
-        for (int j = emptyBlockContainer.y - 1; j >= 0; j--)
-        {
-            if (!ReferenceEquals(hexBlockContainerMatrix[xIndex, j], null) && !ReferenceEquals(hexBlockContainerMatrix[xIndex, j].hexBlock, null))
-            {
-                upperEmptyBlock = hexBlockContainerMatrix[xIndex, j];
-                break;
-            }
-        }
-        return upperEmptyBlock;
-    }
     public static void InitHexBlockContainerMatrix(int width, int height)
     {
         hexBlockContainerMatrix = new HexBlockContainer[width, height];
-        _highestHexBlockContainerEachColumnList = new();
         var hexBlockContainerList = GameObject.FindGameObjectsWithTag(ETag.HexBlockContainer.ToString());
         foreach (var hexBlockContainerGo in hexBlockContainerList)
         {
@@ -232,22 +187,7 @@ public class HexBlockContainer : CustomColliderMonobehaviour
             {
                 var hexBlockContainer = hexBlockContainerGo.GetComponent<HexBlockContainer>();
                 hexBlockContainerMatrix[hexBlockContainer.x, hexBlockContainer.y] = hexBlockContainer;
-
-                if (!_highestHexBlockContainerEachColumnList.Any(hsdf => hsdf.x == hexBlockContainer.x))
-                {
-                    _highestHexBlockContainerEachColumnList.Add(hexBlockContainer);
-                }
-                else
-                {
-                    var highestContainer = _highestHexBlockContainerEachColumnList.Find(h => h.x == hexBlockContainer.x);
-                    var highestContainerIndex = _highestHexBlockContainerEachColumnList.IndexOf(highestContainer);
-                    if (highestContainer.y > hexBlockContainer.y)//y좌표가 작을수록 높이 있는 블럭이다.
-                    {
-                        _highestHexBlockContainerEachColumnList[highestContainerIndex] = hexBlockContainer;
-                    }
-                }
             }
-            
         }
     }
 
@@ -264,59 +204,12 @@ public class HexBlockContainer : CustomColliderMonobehaviour
             var hexBlockPresetColor = hexBlock.eColor;
             var hexBlockPresetType = hexBlock.eBlockType;
             Destroy(hexBlock.gameObject); //프리셋으로 저장했던거 파괴 후 오브젝트 풀링으로 재생성
-            PoolableManager.Instance.InstantiateAsync<HexBlock>(EPrefab.HexBlock, transform.position, Vector3.one, parentTransform: BlockEditor.Instance.transform).ContinueWithNullCheck(x =>
+            PoolableManager.Instance.InstantiateAsync<HexBlock>(EPrefab.HexBlock, transform.position).ContinueWithNullCheck(x =>
             {
                 x.Init(hexBlockPresetColor, hexBlockPresetType);
                 x.SetHexBlockContainerWithMove(this, 1000f);
             });
         }
-    }
-
-
-
-    private async UniTask SortBlocksAndGenerateNewBlocks()
-    {
-        List<int> GetExistEmptyColumnList()
-        {
-            List<int> existEmptyColumnList = new List<int>();
-            for (int i = 0; i < BlockEditor.Instance.width; i++)
-            {
-                var emptyTop = GetTopEmptyHexBlockContainerInSameColum(i);
-                if (ReferenceEquals(emptyTop, null)) //빈공간이 없다
-                {
-                    continue;
-                }
-                else
-                {
-                    existEmptyColumnList.Add(i);
-                }
-            }
-            return existEmptyColumnList;
-        }
-        List<int> existEmptyColumnList = GetExistEmptyColumnList();
-
-        //기존 블럭이 동시에 흘러 내려가기
-        //x=0, y =  11부터 시작해서 만약 아래칸이 비어있다면, 비어있지 않은 칸을 찾을때까지 수직아아래로 내려가기.
-        var moveTaskeList = new List<UniTask>();
-        foreach (var emptyXIndex in existEmptyColumnList)
-        {
-            while (true)
-            {
-                var emptyTop = GetTopEmptyHexBlockContainerInSameColum(emptyXIndex);
-                var nextBlock = GetEmptyUpperHexBlockContainerInSameColum(emptyTop);
-                if (ReferenceEquals(nextBlock, null))
-                {
-                    break;
-                }
-                moveTaskeList.Add(nextBlock.hexBlock.SetHexBlockContainerWithMove(emptyTop, 0.2f, isTimeBase: true));
-            }
-        }
-        await UniTask.WhenAll(moveTaskeList);
-        moveTaskeList.Clear();
-        //입구에서 흘러나오는 블럭에 방해되는 블럭들이 있다면, 해당 방향으로 떨어진다.
-
-
-        await UniTask.WhenAll(moveTaskeList);
     }
    
     private static List<HexBlockContainer> GetNeighborContainerBlockList(HexBlockContainer hexBlockContainer)

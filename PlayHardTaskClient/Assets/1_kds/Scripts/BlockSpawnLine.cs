@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using Sirenix.OdinInspector;
 using SRF;
 using System.Collections;
@@ -9,37 +10,81 @@ public class BlockSpawnLine : MonoBehaviour
 {
     [SerializeField] private List<Vector2> spawnLineList = new();
     public List<(int x, int y)> spawnLineIndexList = new();
-    private HexBlockContainer _hexBlockContainer;
+    private List<HexBlockContainer> _spawnLineHexBlockContainerList = new();
+    private HexBlockContainer _spawnPointHexBlockContainer;
+    private bool _isSetSpawnLineDone;
+    const float newBlockMoveSpeed = 600f;
     private void Awake()
     {
-        _hexBlockContainer = GetComponent<HexBlockContainer>();
+        _spawnPointHexBlockContainer = GetComponent<HexBlockContainer>();
         SetSpawnLineIndexList();
     }
-    private void Start()
+    private async void Start()
     {
-        SpawnBlocksInLine(16);
+        await UniTask.DelayFrame(1);
+        PushAndSpawnBlocksInLine();
     }
     private void SetSpawnLineIndexList()
     {
+        if(_isSetSpawnLineDone)
+        {
+            return;
+        }
+        _isSetSpawnLineDone = true;
         spawnLineIndexList.Clear();
         foreach (var item in spawnLineList)
         {
-            spawnLineIndexList.Add((Mathf.RoundToInt(item.x), Mathf.RoundToInt(item.y)));
+            int x = Mathf.RoundToInt(item.x);
+            int y = Mathf.RoundToInt(item.y);
+            spawnLineIndexList.Add((x, y));
+            if(Application.isPlaying)
+            {
+                _spawnLineHexBlockContainerList.Add(HexBlockContainer.hexBlockContainerMatrix[x, y]);
+            }
         }
     }
-    private void SpawnBlocksInLine(int blockCnt) //양옆 16개씩 스폰
+    private async UniTask PushAndSpawnBlocksInLine()
     {
-        foreach (var item in spawnLineIndexList)
+        List<UniTask> moveTaskList= new List<UniTask>();
+        while (true)  //스폰 라인에 빈 공간이 있으면 한칸씩 이동 후 구슬 하나 생성
         {
-            var hexBlock = PoolableManager.Instance.Instantiate<HexBlock>(EPrefab.HexBlock);
-            hexBlock.Init(HexBlockContainer.EColorList.Random(), EBlockType.normal);
-            hexBlock.SetHexBlockContainerWithMove(HexBlockContainer.hexBlockContainerMatrix[item.x, item.y], 1000f);
+            moveTaskList.Clear();
+            int headIndex = FindHeadIndexFromSpawnPointInLine();
+            if(headIndex == _spawnLineHexBlockContainerList.Count -1)
+            {
+                break; //라인이 꽉 차있다.
+            }
+            Debug.Log(headIndex);
+
+            for (int i = headIndex; i >= 0; i--)
+            {
+                moveTaskList.Add(_spawnLineHexBlockContainerList[i].hexBlock.SetHexBlockContainerWithMove(_spawnLineHexBlockContainerList[i + 1], newBlockMoveSpeed));
+            }
+
+
+            var spawnedBlock = PoolableManager.Instance.Instantiate<HexBlock>(EPrefab.HexBlock, _spawnPointHexBlockContainer.transform.position);
+            spawnedBlock.Init(HexBlockContainer.EColorList.Random(), EBlockType.normal);
+            moveTaskList.Add(spawnedBlock.SetHexBlockContainerWithMove(_spawnLineHexBlockContainerList[0], newBlockMoveSpeed));
+            await UniTask.WhenAll(moveTaskList);
         }
     }
+    private int FindHeadIndexFromSpawnPointInLine() //index가 음수면 스폰 포인트와 연결된 구슬이 없다는 뜻
+    {
+        for(int i = -1; i<_spawnLineHexBlockContainerList.Count-1;i++)
+        {
+            if (ReferenceEquals(_spawnLineHexBlockContainerList[i+1].hexBlock,null))
+            {
+                return i;
+            }
+        }
+        return _spawnLineHexBlockContainerList.Count-1;
+    }
+
 #if UNITY_EDITOR
     private void OnValidate()
     {
         // 에디터에서 OnValidate가 호출될 때 기즈모를 그리도록 요청
+        _isSetSpawnLineDone = false;
         SceneView.RepaintAll();
     }
 

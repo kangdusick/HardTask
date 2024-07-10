@@ -27,7 +27,7 @@ public class GameManager : MonoBehaviour
         float targetWidth = 1080f;
         float targetHeight = 1920f;
         float targetRate = targetWidth / targetHeight;
-        Camera.main.orthographicSize = 600f * targetRate / screenRate;
+        Camera.main.orthographicSize = 876f * targetRate / screenRate;
     }
     private void Update()
     {

@@ -35,6 +35,15 @@ public class HexBlock : MonoBehaviour
     public Canvas canvas;
     public EColor eColor;
     public EBlockType eBlockType;
+    private void Awake()
+    {
+        if(!ReferenceEquals(BlockEditor.Instance,null))
+        {
+            transform.SetParent(BlockEditor.Instance.transform);
+            transform.rotation = Quaternion.identity;
+            transform.localScale = Vector3.one;
+        }
+    }
     public void Init(EColor eColor, EBlockType eBlockType)
     {
         isItemEffectDone = false;
@@ -52,17 +61,6 @@ public class HexBlock : MonoBehaviour
         }
         UpdateBlockImage();
     }
-    private HexBlockContainer FindSameXHexBlockContainer(Vector3 pos)
-    {
-        foreach (var hexBlockContainer in CollisionDetectManager.Instance.hexBlockContainerList)
-        {
-            if (Mathf.Abs(hexBlockContainer.transform.position.x - pos.x) <= 0.01f)
-            {
-                return hexBlockContainer;
-            }
-        }
-        return null;
-    }
     public void ChangeHexBlockContainer(HexBlockContainer hexBlockContainer)
     {
         if (!ReferenceEquals(this.hexBlockContainer, null) && this.hexBlockContainer.hexBlock == this)
@@ -77,25 +75,21 @@ public class HexBlock : MonoBehaviour
             y = hexBlockContainer.y;
         }
     }
-    public async UniTask SetHexBlockContainerWithMove(HexBlockContainer hexBlockContainer, float moveSpeed, List<Vector3> movingLine = null, bool isMoveDirectly = false, bool isTimeBase = false)
+    public async UniTask SetHexBlockContainerWithMove(HexBlockContainer hexBlockContainer, float moveSpeed, bool isMoveDirectly = false, bool isTimeBase = false)
     {
         ChangeHexBlockContainer(hexBlockContainer);
 
-        var movingRouteList = new List<Vector3>();
-        if(!isMoveDirectly && !ReferenceEquals(movingLine,null))
-        {
-            movingRouteList.AddRange(movingLine);
-        }
         var isMoveDone = false;
-
-        movingRouteList.Add(hexBlockContainer.transform.position);
-
-        for(int i = 0; i<movingRouteList.Count; i++)
+        if(!isMoveDirectly)
         {
-            isMoveDone = false;
-            transform.DOMove(movingRouteList[i], moveSpeed).SetSpeedBased(!isTimeBase).OnComplete(() => isMoveDone = true);
-            await UniTask.WaitWhile(() => !isMoveDone);
+            transform.DOMove(hexBlockContainer.transform.position, moveSpeed).SetSpeedBased(!isTimeBase).OnComplete(() => isMoveDone = true);
         }
+        else
+        {
+            transform.position = hexBlockContainer.transform.position;
+            isMoveDone = true;
+        }
+        await UniTask.WaitWhile(() => !isMoveDone);
     }
     private void UpdateBlockImage()
     {
