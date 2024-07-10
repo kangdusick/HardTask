@@ -198,7 +198,7 @@ public class HexBlockContainer : MonoBehaviour
         }
     }
    
-    private static List<HexBlockContainer> GetNeighborContainerBlockList(HexBlockContainer hexBlockContainer)
+    public static List<HexBlockContainer> GetNeighborContainerBlockList(HexBlockContainer hexBlockContainer)
     {
         var neighborList = new List<HexBlockContainer>();
         foreach (var dir in dirList)
