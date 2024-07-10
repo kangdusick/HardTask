@@ -9,10 +9,10 @@ public class ObservableHashSet<T> : IDisposable, IEnumerable<T>
 {
     private HashSet<T> set;
 
-    public ManagedAction OnChanged = new();
-    public ManagedAction OnAdded = new();
-    public ManagedAction<T> OnAddedItem = new();
-    public ManagedAction<T> OnRemovedItem = new();
+    public Action OnChanged;
+    public Action OnAdded;
+    public Action<T> OnAddedItem;
+    public Action<T> OnRemovedItem;
     public ObservableHashSet()
     {
         set = new HashSet<T>();
@@ -94,10 +94,10 @@ public class ObservableList<T> : IDisposable, IEnumerable<T>
 {
     private List<T> list;
 
-    public ManagedAction OnChanged = new();
-    public ManagedAction<T> OnRemovedItem = new();
-    public ManagedAction<T> OnAddedItem = new();  // Event to notify when an item is added
-    public ManagedAction<T, T, int> OnItemUpdated = new();
+    public Action OnChanged;
+    public Action<T> OnRemovedItem;
+    public Action<T> OnAddedItem;  // Event to notify when an item is added
+    public Action<T, T, int> OnItemUpdated;
 
     public ObservableList()
     {
@@ -211,8 +211,8 @@ public class ObservableDictionary<TKey, TValue> : IDisposable, IEnumerable<KeyVa
 {
     protected Dictionary<TKey, TValue> dictionary;
 
-    public ManagedAction OnChanged = new();
-    public ManagedAction<TKey> OnChangedItem = new();
+    public Action OnChanged;
+    public Action<TKey> OnChangedItem;
 
     public ObservableDictionary()
     {

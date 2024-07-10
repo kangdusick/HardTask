@@ -1,91 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &517491058355870978
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 6881297312161570067}
-  - component: {fileID: 7799461495779328949}
-  - component: {fileID: 339833369499924748}
-  m_Layer: 5
-  m_Name: CollisionGroup
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &6881297312161570067
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 517491058355870978}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 7762826417536684326}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &7799461495779328949
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 517491058355870978}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6e4c024321018a44184b4d74b2e9d1db, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  layerPreset: 00000000
-  Scaler: 1
---- !u!58 &339833369499924748
-CircleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 517491058355870978}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  serializedVersion: 2
-  m_Radius: 44.1426
 --- !u!1 &619610561108433734
 GameObject:
   m_ObjectHideFlags: 0
@@ -98,13 +12,14 @@ GameObject:
   - component: {fileID: 2050618936152199981}
   - component: {fileID: 3134306719824303343}
   - component: {fileID: 2405500176275616301}
-  m_Layer: 5
+  - component: {fileID: 3459720470165410592}
+  m_Layer: 8
   m_Name: HexBlockContainer
   m_TagString: HexBlockContainer
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &7762826417536684326
 RectTransform:
   m_ObjectHideFlags: 0
@@ -117,7 +32,6 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 6881297312161570067}
   - {fileID: 3573667808477624355}
   - {fileID: 5849529077351792537}
   m_Father: {fileID: 0}
@@ -139,9 +53,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7efac06a66353d41af1987e065cabf4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  collisionGroup: {fileID: 0}
-  detectGroup: {fileID: 0}
-  isIgnoreDieEvent: 0
   hexBlock: {fileID: 0}
   _hintEffectImage: {fileID: 1051889534900298149}
   _hintEffectAnim: {fileID: 6463189912748673607}
@@ -185,6 +96,57 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!60 &3459720470165410592
+PolygonCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 619610561108433734}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Points:
+    m_Paths:
+    - - {x: 0, y: 50}
+      - {x: -44.1406, y: 25}
+      - {x: -44.1406, y: -25}
+      - {x: 0, y: -50}
+      - {x: 44.1406, y: -25}
+      - {x: 44.1406, y: 25}
+  m_UseDelaunayMesh: 0
 --- !u!1 &1471772340247338192
 GameObject:
   m_ObjectHideFlags: 0
@@ -196,7 +158,7 @@ GameObject:
   - component: {fileID: 5849529077351792537}
   - component: {fileID: 6055370650503360331}
   - component: {fileID: 2492899892304039683}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: IndexForDebugText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -253,7 +215,7 @@ MonoBehaviour:
   m_text: 0,0
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: de7a765e800a4a04d9c95658d8d833f6, type: 2}
-  m_sharedMaterial: {fileID: 0}
+  m_sharedMaterial: {fileID: -149141171242601402, guid: de7a765e800a4a04d9c95658d8d833f6, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -272,7 +234,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -303,7 +265,7 @@ MonoBehaviour:
   checkPaddingRequired: 0
   m_isRichText: 1
   m_parseCtrlCharacters: 1
-  m_isOrthographic: 0
+  m_isOrthographic: 1
   m_isCullingEnabled: 0
   m_horizontalMapping: 0
   m_verticalMapping: 0
@@ -331,7 +293,7 @@ GameObject:
   - component: {fileID: 1253302857450291323}
   - component: {fileID: 1051889534900298149}
   - component: {fileID: 6463189912748673607}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: HintEffect
   m_TagString: Untagged
   m_Icon: {fileID: 0}

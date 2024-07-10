@@ -25,12 +25,12 @@ public class TouchManager : MonoBehaviour
             _instance = value;
         }
     }
-    public Dictionary<ELayers, ManagedAction<RaycastHit2D, Vector2>> OnTouchDownLayer = new();
-    public Dictionary<ELayers, ManagedAction<RaycastHit2D, Vector2>> OnTouchIngLayer = new();
-    public Dictionary<ELayers, ManagedAction<RaycastHit2D, Vector2>> OnTouchUpLayer = new();
-    public ManagedAction<Vector2> OnTouchDown = new();
-    public ManagedAction<Vector2> OnTouchIng = new();
-    public ManagedAction<Vector2> OnTouchUp = new();
+    public Dictionary<ELayers, Action<RaycastHit2D, Vector2>> OnTouchDownLayer = new();
+    public Dictionary<ELayers, Action<RaycastHit2D, Vector2>> OnTouchIngLayer = new();
+    public Dictionary<ELayers, Action<RaycastHit2D, Vector2>> OnTouchUpLayer = new();
+    public Action<Vector2> OnTouchDown;
+    public Action<Vector2> OnTouchIng;
+    public Action<Vector2> OnTouchUp;
     public bool isTouching;
     public Vector3 mouseWorldPos;
     private void Awake()
@@ -44,13 +44,13 @@ public class TouchManager : MonoBehaviour
     {
         foreach (ELayers item in Enum.GetValues(typeof(ELayers)))
         {
-            OnTouchDownLayer[item] = new();
-            OnTouchIngLayer[item] = new();
-            OnTouchUpLayer[item] = new();
+            OnTouchDownLayer[item] = null;
+            OnTouchIngLayer[item] = null;
+            OnTouchUpLayer[item] = null;
         }
-        OnTouchDown = new();
-        OnTouchIng = new();
-        OnTouchUp = new();
+        OnTouchDown = null;
+        OnTouchIng = null;
+        OnTouchUp = null;
         isTouching = false;
     }
 

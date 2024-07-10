@@ -99,10 +99,10 @@ public class TMPLinkDetector : MonoBehaviour
         boxCollider2D.isTrigger = true;
         gameObject.layer = (int)ELayers.TMPLink;
         UpdateColliderSizeAndOffset();
-        TouchManager.Instance.OnTouchDownLayer[ELayers.TMPLink].RemoveListener(OnTouchDown);
-        TouchManager.Instance.OnTouchDownLayer[ELayers.TMPLink].AddListener(this, OnTouchDown);
-        TouchManager.Instance.OnTouchUpLayer[ELayers.TMPLink].RemoveListener(OnTouchUp);
-        TouchManager.Instance.OnTouchUpLayer[ELayers.TMPLink].AddListener(this, OnTouchUp);
+        TouchManager.Instance.OnTouchDownLayer[ELayers.TMPLink]-=OnTouchDown;
+        TouchManager.Instance.OnTouchDownLayer[ELayers.TMPLink]+=OnTouchDown;
+        TouchManager.Instance.OnTouchUpLayer[ELayers.TMPLink] -= OnTouchUp;
+        TouchManager.Instance.OnTouchUpLayer[ELayers.TMPLink] += OnTouchUp;
 
         baseCanvas = FindFirstParentCanvas(transform);
     }
