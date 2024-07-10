@@ -18,7 +18,6 @@ public class TransitionManager : MonoBehaviour
         BasePopup.currentSortingOrder = 0;
         TMPLinkDetector.popLinkInfoSet.Clear();
         Time.timeScale = 1f;
-        CollisionDetectManager.Instance = null;
     }
     private void OnSceneLoaded(Scene scene,LoadSceneMode loadSceneMode)
     {

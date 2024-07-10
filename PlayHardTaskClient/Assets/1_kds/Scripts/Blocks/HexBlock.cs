@@ -113,28 +113,6 @@ public class HexBlock : MonoBehaviour
             blockImage.SetNativeSize();
         }
     }
-    public static List<HexBlock> GetAllHexBlockList(bool isFindOnlyNormalBlock)
-    {
-        List<HexBlock> hexBlockList = new();
-        foreach (var item in CollisionDetectManager.Instance.hexBlockContainerList)
-        {
-            if (!ReferenceEquals(item.hexBlock, null))
-            {
-                if (isFindOnlyNormalBlock)
-                {
-                    if (item.hexBlock.eBlockType == EBlockType.normal)
-                    {
-                        hexBlockList.Add(item.hexBlock);
-                    }
-                }
-                else
-                {
-                    hexBlockList.Add(item.hexBlock);
-                }
-            }
-        }
-        return hexBlockList;
-    }
   
     public async UniTask Damaged()
     {
@@ -169,17 +147,6 @@ public class HexBlock : MonoBehaviour
 
         } 
         Destroy();
-    }
-    public async UniTask Merge(Vector3 mergePoint)
-    {
-        bool isMergeDone = false;
-        // ChangeHexBlockContainer(null);
-        transform.DOMove(mergePoint, 0.1f).OnComplete(async () =>
-        {
-            await Damaged();
-            isMergeDone = true;
-        });
-        await UniTask.WaitWhile(()=>!isMergeDone);
     }
     public void Destroy()
     {

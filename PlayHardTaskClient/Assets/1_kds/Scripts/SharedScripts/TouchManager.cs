@@ -28,9 +28,6 @@ public class TouchManager : MonoBehaviour
     public Dictionary<ELayers, ManagedAction<RaycastHit2D, Vector2>> OnTouchDownLayer = new();
     public Dictionary<ELayers, ManagedAction<RaycastHit2D, Vector2>> OnTouchIngLayer = new();
     public Dictionary<ELayers, ManagedAction<RaycastHit2D, Vector2>> OnTouchUpLayer = new();
-    public HashSet<CollisionGroup> OnTouchIngCollisionGroupSet = new();
-    public HashSet<CollisionGroup> OnTouchDownCollisionGroupSet = new();
-    public HashSet<CollisionGroup> OnTouchUpCollisionGroupSet = new();
     public ManagedAction<Vector2> OnTouchDown = new();
     public ManagedAction<Vector2> OnTouchIng = new();
     public ManagedAction<Vector2> OnTouchUp = new();
@@ -108,14 +105,6 @@ public class TouchManager : MonoBehaviour
         foreach (var hit in mousHits)
         {
             OnTouchIngLayer[(ELayers)hit.collider.gameObject.layer].Invoke(hit, screenPos);
-            if(hit.collider.gameObject.layer == (int)ELayers.CollisionGroup)
-            {
-                var collisionGroup = hit.collider.gameObject.GetCashComponent<CollisionGroup>();
-                if (!ReferenceEquals(collisionGroup, null) && OnTouchIngCollisionGroupSet.Contains(collisionGroup))
-                {
-                    collisionGroup.InvokeOnTouching();
-                }
-            }
         }
         OnTouchIng.Invoke(screenPos);
     }
@@ -129,14 +118,6 @@ public class TouchManager : MonoBehaviour
         foreach (var hit in mousHits)
         {
             OnTouchDownLayer[(ELayers)hit.collider.gameObject.layer].Invoke(hit, screenPos);
-            if (hit.collider.gameObject.layer == (int)ELayers.CollisionGroup)
-            {
-                var collisionGroup = hit.collider.gameObject.GetCashComponent<CollisionGroup>();
-                if (!ReferenceEquals(collisionGroup, null) && OnTouchDownCollisionGroupSet.Contains(collisionGroup))
-                {
-                    collisionGroup.InvokeOnTouchDown();
-                }
-            }
         }
         OnTouchDown.Invoke(screenPos);
     }
@@ -150,14 +131,6 @@ public class TouchManager : MonoBehaviour
         foreach (var hit in mousHits)
         {
             OnTouchUpLayer[(ELayers)hit.collider.gameObject.layer].Invoke(hit, screenPos);
-            if (hit.collider.gameObject.layer == (int)ELayers.CollisionGroup)
-            {
-                var collisionGroup = hit.collider.gameObject.GetCashComponent<CollisionGroup>();
-                if (!ReferenceEquals(collisionGroup, null) && OnTouchUpCollisionGroupSet.Contains(collisionGroup))
-                {
-                    collisionGroup.InvokeOnTouchUp();
-                }
-            }
         }
         OnTouchUp.Invoke(screenPos);
     }

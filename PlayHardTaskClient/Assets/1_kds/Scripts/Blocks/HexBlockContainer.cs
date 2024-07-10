@@ -138,7 +138,7 @@ public enum EDirIndex
     RightUp = 4,
     LeftDown = 5,
 }
-public class HexBlockContainer : CustomColliderMonobehaviour
+public class HexBlockContainer : MonoBehaviour
 {
     public static HexBlockContainer[,] hexBlockContainerMatrix;
     public static readonly List<EColor> EColorList = new List<EColor>() { EColor.blue, EColor.red, EColor.yellow };
@@ -150,20 +150,6 @@ public class HexBlockContainer : CustomColliderMonobehaviour
     public int y;
     public const float hexWidth = 88.28125f;
     public const float hexHeight = 100f;
-    public static bool IsAllBlockGenerated
-    {
-        get 
-        {
-            foreach (var item in CollisionDetectManager.Instance.hexBlockContainerList)
-            {
-                if(ReferenceEquals(item.hexBlock,null))
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-    }
     public void EnableHintEffect(bool isEnableHintEffect)
     {
         if(isEnableHintEffect)
@@ -288,17 +274,17 @@ public class HexBlockContainer : CustomColliderMonobehaviour
             return false;
         }
         var neighborList = GetNeighborContainerBlockList(hexBlockContainer);
-        var standardHexBlockContainerIndex = CollisionDetectManager.Instance.hexBlockContainerList.IndexOf(hexBlockContainer);
-        foreach (var neighborHexBlockContainer in neighborList)
-        {
-            var neighborHexBlockContainerIndex = CollisionDetectManager.Instance.hexBlockContainerList.IndexOf(neighborHexBlockContainer);
+        //var standardHexBlockContainerIndex = CollisionDetectManager.Instance.hexBlockContainerList.IndexOf(hexBlockContainer);
+        //foreach (var neighborHexBlockContainer in neighborList)
+        //{
+        //    var neighborHexBlockContainerIndex = CollisionDetectManager.Instance.hexBlockContainerList.IndexOf(neighborHexBlockContainer);
 
-            if ((unionFind.Find(standardHexBlockContainerIndex) != unionFind.Find(neighborHexBlockContainerIndex)) && IsCanUnion(hexBlockContainer.hexBlock, neighborHexBlockContainer.hexBlock) )
-            {
-                unionFind.Union(standardHexBlockContainerIndex, neighborHexBlockContainerIndex);
-                Union(neighborHexBlockContainer, unionFind);
-            }
-        }
+        //    if ((unionFind.Find(standardHexBlockContainerIndex) != unionFind.Find(neighborHexBlockContainerIndex)) && IsCanUnion(hexBlockContainer.hexBlock, neighborHexBlockContainer.hexBlock) )
+        //    {
+        //        unionFind.Union(standardHexBlockContainerIndex, neighborHexBlockContainerIndex);
+        //        Union(neighborHexBlockContainer, unionFind);
+        //    }
+        //}
     }
     private static bool IsNeighbor(HexBlock hexBlockA, HexBlock hexBlockB)
     {

@@ -90,23 +90,6 @@ public class ObservableHashSet<T> : IDisposable, IEnumerable<T>
         set = null;
     }
 }
-public class ObservableCharacterMonobehaviourList<T> : ObservableList<T> where T: CustomColliderMonobehaviour
-{
-    public ManagedAction<T> OnDie = new();
-    public override bool Remove(T item)
-    {
-        if(ReferenceEquals(item, null))
-        {
-            return false;
-        }
-        bool isRemoved = base.Remove(item);
-        if (isRemoved && item.IsDie && !item.isIgnoreDieEvent)
-        {
-            OnDie.Invoke(item);
-        }
-        return isRemoved;
-    }
-}
 public class ObservableList<T> : IDisposable, IEnumerable<T>
 {
     private List<T> list;
