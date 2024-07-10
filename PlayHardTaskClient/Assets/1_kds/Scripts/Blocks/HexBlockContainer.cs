@@ -152,12 +152,12 @@ public class HexBlockContainer : MonoBehaviour
     public const float hexHeight = 100f;
     public void EnableHintEffect(bool isEnableHintEffect)
     {
-        if(isEnableHintEffect)
+        if(isEnableHintEffect && _hintEffectImage.enabled == false)
         {
             _hintEffectImage.enabled = true;
-            _hintEffectAnim.DORestart();
+            _hintEffectAnim.DOPlay();
         }
-        else
+        if(!isEnableHintEffect && _hintEffectImage.enabled == true)
         {
             _hintEffectImage.enabled = false;
             _hintEffectAnim.DOPause();

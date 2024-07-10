@@ -1,5 +1,7 @@
+using Cysharp.Threading.Tasks;
 using Sirenix.OdinInspector;
 using Sirenix.Utilities;
+using SRF;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,29 +9,34 @@ using UnityEngine;
 
 public class BallShooter : MonoBehaviour
 {
-    [SerializeField] RectTransform shootingStartPoint;
-    [SerializeField] RectTransform point1;
-    [SerializeField] RectTransform point2;
-    HexBlockContainer destineHexBlockContainer = null;
+    [SerializeField] private RectTransform _shootingStartPoint;
+    [SerializeField] private RectTransform point1;
+    [SerializeField] private RectTransform point2;
+    private HexBlockContainer _destineHexBlockContainer = null;
+    private List<Vector2> shootingBallMovingRoute = new();
+    private const float shootingBallSpeed = 1000f;
     private void Awake()
     {
         TouchManager.Instance.OnTouchIng+= SetDestineHexBlockContainer;
+        TouchManager.Instance.OnTouchUp += ShootingBall;
     }
 
     void SetDestineHexBlockContainer(Vector2 screenPos) //마우스 클릭 중에 조준선이 활성화되며 구슬이 어디에 도착할지 표시해준다.
     {
-        if (!ReferenceEquals(destineHexBlockContainer, null))
+        shootingBallMovingRoute.Clear();
+        if (!ReferenceEquals(_destineHexBlockContainer, null))
         {
-            destineHexBlockContainer.EnableHintEffect(false);
-            destineHexBlockContainer = null;
+            _destineHexBlockContainer.EnableHintEffect(false);
+            _destineHexBlockContainer = null;
         }
 
-        var laserDirection = TouchManager.Instance.mouseWorldPos - shootingStartPoint.transform.position;
+        var laserDirection = TouchManager.Instance.mouseWorldPos - _shootingStartPoint.transform.position;
         laserDirection.z = 0f;
 
-        var hit = GetNearestRaycastHit(shootingStartPoint.transform.position, laserDirection,new List<ELayers>() { ELayers.Wall,ELayers.HexBlockContainer});
+        var hit = GetNearestRaycastHit(_shootingStartPoint.transform.position, laserDirection,new List<ELayers>() { ELayers.Wall,ELayers.HexBlockContainer});
         if(!ReferenceEquals(hit.collider,null)) 
         {
+            shootingBallMovingRoute.Add(hit.point);
             point1.transform.position = hit.point;
             if (hit.collider.gameObject.layer == (int)ELayers.Wall) //벽과 충돌한 경우 한번 반사된다.
             {
@@ -44,18 +51,29 @@ public class BallShooter : MonoBehaviour
                 if (!ReferenceEquals(hitByReflect.collider,null))
                 {
                     point2.transform.position = hitByReflect.point;
-                    destineHexBlockContainer = GetBallDestineContainer(hitByReflect);
+                    shootingBallMovingRoute.Add(hitByReflect.point);
+                    _destineHexBlockContainer = GetBallDestineContainer(hitByReflect);
                 }
             }
             else //구슬이 있는 블럭인 경우 해당 구슬과 인접한 가장 가까운 빈 구역을 표시해준다.
             {
-                destineHexBlockContainer = GetBallDestineContainer(hit);
+                _destineHexBlockContainer = GetBallDestineContainer(hit);
             }
         }
 
-        if(!ReferenceEquals(destineHexBlockContainer,null))
+        if(!ReferenceEquals(_destineHexBlockContainer,null))
         {
-            destineHexBlockContainer.EnableHintEffect(true);
+            shootingBallMovingRoute.Add(_destineHexBlockContainer.transform.position);
+            _destineHexBlockContainer.EnableHintEffect(true);
+        }
+    }
+    private async void ShootingBall(Vector2 screenPos)
+    {
+        if(!ReferenceEquals(_destineHexBlockContainer,null))
+        {
+            var shootedBall = PoolableManager.Instance.Instantiate<HexBlock>(EPrefab.HexBlock, _shootingStartPoint.position);
+            shootedBall.Init(HexBlockContainer.EColorList.Random(), EBlockType.normal);
+            shootedBall.SetHexBlockContainerWithMove(_destineHexBlockContainer, shootingBallSpeed, shootingBallMovingRoute);
         }
     }
     private HexBlockContainer GetBallDestineContainer(RaycastHit2D raycastHit2D)
@@ -63,7 +81,7 @@ public class BallShooter : MonoBehaviour
         var detectedContainer = raycastHit2D.collider.gameObject.GetCashComponent<HexBlockContainer>();
         foreach (var item in HexBlockContainer.GetNeighborContainerBlockList(detectedContainer))
         {
-            if(ReferenceEquals(item.hexBlock,null) &&
+            if (ReferenceEquals(item.hexBlock,null) &&
                 GameUtil.DistanceSquare2D(item.transform.position,raycastHit2D.point) <= (HexBlockContainer.hexHeight/2f) * (HexBlockContainer.hexHeight / 2f))
             {
                 return item;

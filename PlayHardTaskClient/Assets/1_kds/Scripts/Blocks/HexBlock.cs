@@ -75,14 +75,23 @@ public class HexBlock : MonoBehaviour
             y = hexBlockContainer.y;
         }
     }
-    public async UniTask SetHexBlockContainerWithMove(HexBlockContainer hexBlockContainer, float moveSpeed, bool isMoveDirectly = false, bool isTimeBase = false)
+    public async UniTask SetHexBlockContainerWithMove(HexBlockContainer hexBlockContainer, float moveSpeed, List<Vector2> movingRoute = null, bool isMoveDirectly = false, bool isTimeBase = false)
     {
         ChangeHexBlockContainer(hexBlockContainer);
 
         var isMoveDone = false;
         if(!isMoveDirectly)
         {
-            transform.DOMove(hexBlockContainer.transform.position, moveSpeed).SetSpeedBased(!isTimeBase).OnComplete(() => isMoveDone = true);
+            if(!ReferenceEquals(movingRoute,null))
+            {
+                foreach (var item in movingRoute)
+                {
+                    isMoveDone = false;
+                    transform.DOMove(item, moveSpeed).SetEase(Ease.Linear).SetSpeedBased(!isTimeBase).OnComplete(() => isMoveDone = true);
+                    await UniTask.WaitWhile(() => !isMoveDone);
+                }
+            }
+            transform.DOMove(hexBlockContainer.transform.position, moveSpeed).SetEase(Ease.Linear).SetSpeedBased(!isTimeBase).OnComplete(() => isMoveDone = true);
         }
         else
         {

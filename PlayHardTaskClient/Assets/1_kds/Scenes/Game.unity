@@ -10838,7 +10838,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1949bf82d0d079f4185dcd7a7c7cf029, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shootingStartPoint: {fileID: 1876985317}
+  _shootingStartPoint: {fileID: 1876985317}
   point1: {fileID: 1023790529}
   point2: {fileID: 442095470}
 --- !u!1001 &416866658
