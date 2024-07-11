@@ -372,7 +372,7 @@ public class StatusDictionary : ObservableDictionary<(ELanguageTable status, ESt
         {
             subValue = setSubValueFunc(FinalValue);
         }
-        OnChanged.Invoke();
+        OnChanged?.Invoke();
     }
 
     protected override void Changed()
