@@ -42,11 +42,6 @@ public class LoadManager : MonoBehaviour
         }
     }
     public static bool isLoadScene;
-    private void EnableDebbuger()
-    {
-        Debug.unityLogger.logEnabled = true;
-        SRDebug.Init();
-    }
 
    
 
@@ -79,22 +74,6 @@ public class LoadManager : MonoBehaviour
         {
             _loadingText.text = "InitTable...";
             TableManager.LoadTables();
-#if UNITY_EDITOR
-            EnableDebbuger();
-#endif
-            if(Debug.isDebugBuild)
-            {
-                EnableDebbuger();
-            }
-            foreach (var item in TableManager.ConfigTableDict[EConfigTable.masterID].StringArray)
-            {
-                if(item.Equals(SystemInfo.deviceUniqueIdentifier))
-                {
-                    EnableDebbuger();
-                    Debug.Log("마스터 기기");
-                    break;
-                }
-            }
         }
         _loadingSlider.value += progressAdder;
         Localization();
@@ -142,14 +121,5 @@ public class LoadManager : MonoBehaviour
     private void OnDestroy()
     {
         isLoadScene = false;
-    }
-    public void GoToStore()
-    {
-
-#if UNITY_IOS
-        Application.OpenURL("https://apps.apple.com/app/%EB%B9%9A-%EB%A7%8E%EC%9D%80-%EB%86%8D%EB%B6%80/id6502551417");
-#else
-        Application.OpenURL("https://play.google.com/store/apps/details?id=com.kdsgamestudio.farmer2");
-#endif
     }
 }

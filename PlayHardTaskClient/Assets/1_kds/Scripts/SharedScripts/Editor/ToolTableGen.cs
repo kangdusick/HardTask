@@ -53,7 +53,6 @@ public static class TableManager
         isLoadDone = false;
         var tableHandle = Addressables.LoadAssetAsync<TextAsset>(""Assets/1_kds/Json/Tables.json"").WaitForCompletion();
         var tableTostring = tableHandle.text;
-        tableTostring = ES3.DecryptString(tableTostring);
         var jsonData = JObject.Parse(tableTostring);
         foreach (var item in jsonData)
         {{
@@ -277,7 +276,6 @@ public class {0}Loader : ILoader<{1}, {0}>
 
         var filePath = $"{Application.dataPath}/1_kds/Scripts/codegen/TableManager.cs";
 
-        tableTostring = ES3.EncryptString(tableTostring);
         File.WriteAllText($"{Application.dataPath}/1_kds/Json/Tables.json", tableTostring);
 
         File.WriteAllText(filePath, csString.ToString());

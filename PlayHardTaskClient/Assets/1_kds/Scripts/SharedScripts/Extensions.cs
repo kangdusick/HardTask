@@ -112,30 +112,6 @@ public static class Extensions
     {
         SetImageTargetSize(targetImage, SpriteManager.Instance.LoadSprite(targetESprite), targetSize);
     }
-    public static List<(EPowerTable ePowerTable, float powerAmount, int applyLv)> GetEquipPowerList(this CharacterTable characterTable)
-    {
-        var EquipPowerList = new List<(EPowerTable ePowerTable, float powerAmount, int applyLv)>();
-        for (int i = 0; i < characterTable.EquipPowerKeyList.Count; i++)
-        {
-            var powerKey = characterTable.EquipPowerKeyList[i].ParseEnum<EPowerTable>();
-            float powerAmount = 5f * Mathf.Pow(TableManager.ConfigTableDict[EConfigTable.powerPowPerStar].FloatValue, characterTable.star - 1) * TableManager.PowerTableDict[powerKey].amount;
-            int applyLv = (i+1) *20;
-            EquipPowerList.Add((powerKey, powerAmount, applyLv));
-        }
-        return EquipPowerList;
-    }
-    public static List<(EPowerTable ePowerTable, float powerAmount, int applyLv)> GetLastPowerList(this CharacterTable characterTable)
-    {
-        var lastPowerList = new List<(EPowerTable ePowerTable, float powerAmount, int applyLv)>();
-        for (int i = 0; i < characterTable.LastePowerKeyList.Count; i++)
-        {
-            var powerKey = characterTable.LastePowerKeyList[i].ParseEnum<EPowerTable>();
-            float powerAmount = 1f * Mathf.Pow(TableManager.ConfigTableDict[EConfigTable.powerPowPerStar].FloatValue,characterTable.star -1) * TableManager.PowerTableDict[powerKey].amount;
-            int applyLv = (i) * 20+10;
-            lastPowerList.Add((powerKey, powerAmount,applyLv));
-        }
-        return lastPowerList;
-    }
     public static string LocalIzeText(this string keyLabel, params object[] args)
     {
         return LocalIzeText(keyLabel.ParseEnum<ELanguageTable>(), args);
