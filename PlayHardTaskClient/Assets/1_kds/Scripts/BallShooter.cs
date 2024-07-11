@@ -104,6 +104,8 @@ public class BallShooter : MonoBehaviour
     {
         readyBall = PoolableManager.Instance.Instantiate<HexBlock>(EPrefab.HexBlock, _shootingStartPoint.position);
         readyBall.Init(HexBlockContainer.EColorList.Random(), EBlockType.normal);
+        readyBall.transform.localScale = Vector3.zero;
+        readyBall.transform.DOScale(Vector3.one, 0.5f).SetEase(Ease.OutBack);
     }
     void SetDestineHexBlockContainer(Vector2 screenPos) //마우스 클릭 중에 조준선이 활성화되며 구슬이 어디에 도착할지 표시해준다.
     {
@@ -181,12 +183,35 @@ public class BallShooter : MonoBehaviour
         {
             isWhileShooting = true;
             _shootingLineRenderer.gameObject.SetActive(false);
-            await readyBall.SetHexBlockContainerWithMove(_destineHexBlockContainer, shootingBallSpeed, shootingBallMovingRoute);
-            EnableDestinePositionHint(false);
-            await FindMatchAndDestroyBalls(readyBall);
+            var bossBlock = IsBossAttackDirectly();
+            if (bossBlock)
+            {
+                await readyBall.SetHexBlockContainerWithMove(_destineHexBlockContainer, shootingBallSpeed, shootingBallMovingRoute);
+                readyBall.transform.DOMove(bossBlock.transform.position, 0.2f);
+                await UniTask.Delay(210);
+                readyBall.Damaged();
+            }
+            else
+            {
+                await readyBall.SetHexBlockContainerWithMove(_destineHexBlockContainer, shootingBallSpeed, shootingBallMovingRoute);
+                EnableDestinePositionHint(false);
+                await FindMatchAndDestroyBalls(readyBall);
+            }
+           
             PrefareBall();
             isWhileShooting = false;
         }
+    }
+    private HexBlock IsBossAttackDirectly()
+    {
+        foreach (var item in _destineHexBlockContainer.GetNeighborContainerBlockList())
+        {
+            if(!ReferenceEquals(item.hexBlock,null) && item.hexBlock.eBlockType == EBlockType.boss)
+            {
+                return item.hexBlock;
+            }
+        }
+        return null;
     }
     private async UniTask FindMatchAndDestroyBalls(HexBlock shootedBall)
     {
@@ -221,7 +246,7 @@ public class BallShooter : MonoBehaviour
         await BallDestroyer.Instance.DestroyWithBallDestroyer(destroyWithFall);
         foreach (var item in HexBlockContainer.blockSpawnLineList)
         {
-            item.PushAndSpawnBlocksInLine();
+            //item.PushAndSpawnBlocksInLine();
         }
     }
     private void FindAllAttatchmentPoint()
@@ -312,7 +337,7 @@ public class BallShooter : MonoBehaviour
     }
     private RaycastHit2D GetNearestRaycastHit(Vector3 from, Vector3 dir, List<ELayers> detectLayerList)
     {
-        var hits = Physics2D.RaycastAll(from, dir.normalized, 1000f);
+        var hits = Physics2D.RaycastAll(from, dir.normalized, 2000f);
 
         List<RaycastHit2D> hitsList = new();
         foreach (var hit in hits)

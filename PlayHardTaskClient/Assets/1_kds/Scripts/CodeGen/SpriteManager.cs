@@ -12,10 +12,10 @@ public enum ESprite
 	blue_normal = -240477941,
 	[Description("yellow_normal")]
 	yellow_normal = -883872501,
-	[Description("attatchPoint")]
-	attatchPoint = -1731881364,
 	[Description("attatchPoint_Spawn")]
 	attatchPoint_Spawn = -919027796,
+	[Description("empty")]
+	empty = 172708490,
 	[Description("red_normal")]
 	red_normal = 1623121414,
 	

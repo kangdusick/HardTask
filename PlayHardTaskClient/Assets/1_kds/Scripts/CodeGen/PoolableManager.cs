@@ -21,6 +21,8 @@ public enum EPrefab
 	PopCommon = 1367575927,
 	[Description("TopDistroyEffect")]
 	TopDistroyEffect = 605402789,
+	[Description("Fairy")]
+	Fairy = 145775554,
 	[Description("HexBlock")]
 	HexBlock = 1671295265,
 	

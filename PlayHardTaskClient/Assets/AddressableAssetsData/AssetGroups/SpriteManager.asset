@@ -35,14 +35,14 @@ MonoBehaviour:
     m_SerializedLabels:
     - sprite
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: f9a9aa432aea3ff40aebd99dd7b0c4b3
-    m_Address: attatchPoint
+  - m_GUID: bf6cb93f6434f554ba41bb480f120f72
+    m_Address: attatchPoint_Spawn
     m_ReadOnly: 0
     m_SerializedLabels:
     - sprite
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: bf6cb93f6434f554ba41bb480f120f72
-    m_Address: attatchPoint_Spawn
+  - m_GUID: ab19127b78cfc4447a69794f462075c8
+    m_Address: empty
     m_ReadOnly: 0
     m_SerializedLabels:
     - sprite

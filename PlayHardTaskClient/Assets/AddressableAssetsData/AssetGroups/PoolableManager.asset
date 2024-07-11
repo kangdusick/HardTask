@@ -53,6 +53,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - prefab
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 02df53a57b9644040aa6c14668f95c19
+    m_Address: Fairy
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - prefab
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 2eacbe4a782805840a7928a630c6bd1b, type: 2}
   m_SchemaSet:

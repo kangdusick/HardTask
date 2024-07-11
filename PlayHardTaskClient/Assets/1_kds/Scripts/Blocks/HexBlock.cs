@@ -1,12 +1,10 @@
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
-using SRF;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 public enum EColor
 {
     none = 0, // 모든 색상과 매치 될 수 없다.
@@ -18,11 +16,10 @@ public enum EBlockType
 {
     Empty = 0,
     normal = 100,
-    top = 200,
-    item_fairy = 300,
     item_bomb = 400,
     attatchPoint = 500,
     attatchPoint_Spawn = 600,
+    boss = 700
 }
 public class HexBlock : MonoBehaviour
 {
@@ -35,25 +32,26 @@ public class HexBlock : MonoBehaviour
     public Canvas canvas;
     public EColor eColor;
     public EBlockType eBlockType;
-    public bool IsCantDestroyAndMove => (eBlockType == EBlockType.attatchPoint || eBlockType == EBlockType.attatchPoint_Spawn);
+    private Fairy _attatchedFairy;
+    public bool isAttatcfairy = false;
+    public bool IsCantDestroyAndMove => (eBlockType == EBlockType.attatchPoint || eBlockType == EBlockType.attatchPoint_Spawn || eBlockType == EBlockType.boss);
     private void Awake()
     {
         if(!ReferenceEquals(BlockEditor.Instance,null))
         {
             transform.SetParent(BlockEditor.Instance.transform);
             transform.rotation = Quaternion.identity;
-            transform.localScale = Vector3.one;
         }
     }
     public void Init(EColor eColor, EBlockType eBlockType)
     {
+        _attatchedFairy = null;
         isItemEffectDone = false;
         _isDamaged = false;
         this.eColor = eColor;
         this.eBlockType = eBlockType;
         switch (eBlockType)
         {
-            case EBlockType.top:
             case EBlockType.Empty:
             case EBlockType.attatchPoint:
             case EBlockType.attatchPoint_Spawn:
@@ -61,6 +59,14 @@ public class HexBlock : MonoBehaviour
                 break;
         }
         UpdateBlockImage();
+    }
+    public void AttatchFairy(float chance)
+    {
+        if(Random.Range(0f,100f) <= chance)
+        {
+            _attatchedFairy = PoolableManager.Instance.Instantiate<Fairy>(EPrefab.Fairy);
+            _attatchedFairy.Init(this);
+        }
     }
     public void ChangeHexBlockContainer(HexBlockContainer hexBlockContainer)
     {
@@ -104,7 +110,10 @@ public class HexBlock : MonoBehaviour
     private void UpdateBlockImage()
     {
         var spriteName = $"{(eColor == EColor.none ? string.Empty : eColor.ToString() + "_")}{(eBlockType == EBlockType.Empty ? string.Empty : eBlockType.ToString())}";
-        
+        if(eBlockType == EBlockType.attatchPoint || eBlockType == EBlockType.boss)
+        {
+            spriteName = ESprite.empty.ToString();
+        }
         if (string.IsNullOrEmpty(spriteName))
         {
             blockImage.enabled = false;
@@ -131,12 +140,14 @@ public class HexBlock : MonoBehaviour
             return;
         }
         _isDamaged = true;
+        if(!ReferenceEquals(_attatchedFairy,null))
+        {
+            _attatchedFairy.UseFairy();
+            _attatchedFairy = null;
+        }
         switch (eBlockType)
         {
-            case EBlockType.item_fairy:
             case EBlockType.item_bomb:
-                break;
-            case EBlockType.top:
                 break;
             case EBlockType.normal:
                 Color particleColor = Color.blue;

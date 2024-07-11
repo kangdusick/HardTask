@@ -68,6 +68,7 @@ public class BlockSpawnLine : MonoBehaviour
 
             var spawnedBlock = PoolableManager.Instance.Instantiate<HexBlock>(EPrefab.HexBlock, _spawnPointHexBlockContainer.transform.position);
             spawnedBlock.Init(HexBlockContainer.EColorList.Random(), EBlockType.normal);
+            spawnedBlock.AttatchFairy(20f);
             moveTaskList.Add(spawnedBlock.SetHexBlockContainerWithMove(_spawnLineHexBlockContainerList[0], newBlockMoveSpeed));
             await UniTask.WhenAll(moveTaskList);
         }
