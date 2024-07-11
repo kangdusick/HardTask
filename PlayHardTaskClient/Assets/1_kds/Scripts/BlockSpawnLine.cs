@@ -14,14 +14,18 @@ public class BlockSpawnLine : MonoBehaviour
     private HexBlockContainer _spawnPointHexBlockContainer;
     private bool _isSetSpawnLineDone;
     const float newBlockMoveSpeed = 600f;
+    private static int _isWhileSpawningCnt;
+    public static bool IsWhileBallSpawning => _isWhileSpawningCnt != 0;
     private void Awake()
     {
         _spawnPointHexBlockContainer = GetComponent<HexBlockContainer>();
+        _isWhileSpawningCnt = 0;
         SetSpawnLineIndexList();
     }
     private async void Start()
     {
         await UniTask.DelayFrame(1);
+        HexBlockContainer.blockSpawnLineList.Add(this);
         PushAndSpawnBlocksInLine();
     }
     private void SetSpawnLineIndexList()
@@ -43,8 +47,9 @@ public class BlockSpawnLine : MonoBehaviour
             }
         }
     }
-    private async UniTask PushAndSpawnBlocksInLine()
+    public async UniTask PushAndSpawnBlocksInLine()
     {
+        _isWhileSpawningCnt++;
         List<UniTask> moveTaskList= new List<UniTask>();
         while (true)  //스폰 라인에 빈 공간이 있으면 한칸씩 이동 후 구슬 하나 생성
         {
@@ -66,6 +71,7 @@ public class BlockSpawnLine : MonoBehaviour
             moveTaskList.Add(spawnedBlock.SetHexBlockContainerWithMove(_spawnLineHexBlockContainerList[0], newBlockMoveSpeed));
             await UniTask.WhenAll(moveTaskList);
         }
+        _isWhileSpawningCnt--;
     }
     private int FindHeadIndexFromSpawnPointInLine() //index가 음수면 스폰 포인트와 연결된 구슬이 없다는 뜻
     {

@@ -35,6 +35,7 @@ public class HexBlock : MonoBehaviour
     public Canvas canvas;
     public EColor eColor;
     public EBlockType eBlockType;
+    public bool IsCantDestroyAndMove => (eBlockType == EBlockType.attatchPoint || eBlockType == EBlockType.attatchPoint_Spawn);
     private void Awake()
     {
         if(!ReferenceEquals(BlockEditor.Instance,null))
@@ -123,9 +124,9 @@ public class HexBlock : MonoBehaviour
         }
     }
   
-    public async UniTask Damaged()
+    public void Damaged()
     {
-        if(_isDamaged)
+        if(_isDamaged || IsCantDestroyAndMove)
         {
             return;
         }
@@ -157,9 +158,9 @@ public class HexBlock : MonoBehaviour
         } 
         Destroy();
     }
-    public void Destroy()
+    private void Destroy()
     {
-        if (!ReferenceEquals(this.hexBlockContainer, null) && this.hexBlockContainer.hexBlock == this)
+        if (!ReferenceEquals(this.hexBlockContainer, null) && this.hexBlockContainer.hexBlock == this || IsCantDestroyAndMove)
         {
             this.hexBlockContainer.hexBlock = null;
         }
