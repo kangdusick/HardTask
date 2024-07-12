@@ -10,6 +10,7 @@ public class DamageText : MonoBehaviour
             PoolableManager.Instance.Destroy(gameObject);
             return;
         }
+        transform.SetAsLastSibling();
         transform.localScale= Vector3.one;
         transform.position = new Vector3(transform.position.x, transform.position.y + 1f, 0f);
         dmgText.text = damage.KMBTUnit();

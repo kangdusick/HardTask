@@ -47,7 +47,7 @@
       {
         "key": "playerDefaultHp",
         "IntValue": null,
-        "FloatValue": "1000",
+        "FloatValue": "500",
         "IntArray": [],
         "FloatArray": [],
         "StringArray": []
@@ -64,6 +64,14 @@
         "key": "playerDirectDamage",
         "IntValue": null,
         "FloatValue": "60",
+        "IntArray": [],
+        "FloatArray": [],
+        "StringArray": []
+      },
+      {
+        "key": "newBlockMoveSpeed",
+        "IntValue": null,
+        "FloatValue": "1000",
         "IntArray": [],
         "FloatArray": [],
         "StringArray": []

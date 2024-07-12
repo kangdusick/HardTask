@@ -19,7 +19,7 @@ public class Fairy : MonoBehaviour
         transform.SetParent(BlockEditor.Instance.transform);
         if(Boss.Instance.IsCanAttack)
         {
-            transform.DOMove(Boss.Instance.transform.position, 500f).SetSpeedBased().OnComplete(() => 
+            transform.DOMove(Boss.Instance.transform.position, 500f).SetSpeedBased().SetEase(Ease.InCubic).OnComplete(() => 
             {
                 Boss.Instance.OnDamaged(Player.Instance.fairyDamageDict.FinalValue);
                 isMoveDone = true;

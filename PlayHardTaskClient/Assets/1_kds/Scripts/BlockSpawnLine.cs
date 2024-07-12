@@ -13,11 +13,12 @@ public class BlockSpawnLine : MonoBehaviour
     private List<HexBlockContainer> _spawnLineHexBlockContainerList = new();
     private HexBlockContainer _spawnPointHexBlockContainer;
     private bool _isSetSpawnLineDone;
-    const float newBlockMoveSpeed = 600f;
+    private float _newBlockMoveSpeed;
     private static int _isWhileSpawningCnt;
     public static bool IsWhileBallSpawning => _isWhileSpawningCnt != 0;
     private void Awake()
     {
+        _newBlockMoveSpeed = TableManager.ConfigTableDict[EConfigTable.newBlockMoveSpeed].FloatValue;
         _spawnPointHexBlockContainer = GetComponent<HexBlockContainer>();
         _isWhileSpawningCnt = 0;
         SetSpawnLineIndexList();
@@ -62,14 +63,14 @@ public class BlockSpawnLine : MonoBehaviour
 
             for (int i = headIndex; i >= 0; i--)
             {
-                moveTaskList.Add(_spawnLineHexBlockContainerList[i].hexBlock.SetHexBlockContainerWithMove(_spawnLineHexBlockContainerList[i + 1], newBlockMoveSpeed));
+                moveTaskList.Add(_spawnLineHexBlockContainerList[i].hexBlock.SetHexBlockContainerWithMove(_spawnLineHexBlockContainerList[i + 1], _newBlockMoveSpeed));
             }
 
 
             var spawnedBlock = PoolableManager.Instance.Instantiate<HexBlock>(EPrefab.HexBlock, _spawnPointHexBlockContainer.transform.position);
             spawnedBlock.Init(HexBlockContainer.EColorList.Random(), EBlockType.normal);
             spawnedBlock.AttatchFairy(20f);
-            moveTaskList.Add(spawnedBlock.SetHexBlockContainerWithMove(_spawnLineHexBlockContainerList[0], newBlockMoveSpeed));
+            moveTaskList.Add(spawnedBlock.SetHexBlockContainerWithMove(_spawnLineHexBlockContainerList[0], _newBlockMoveSpeed));
             await UniTask.WhenAll(moveTaskList);
         }
         _isWhileSpawningCnt--;

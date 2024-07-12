@@ -16,6 +16,10 @@ public class BallDestroyer : MonoBehaviour
         int remainDestroyCount = hexBlockList.Count;
         foreach (var item in hexBlockList)
         {
+            item.UseFairy();
+        }
+        foreach (var item in hexBlockList)
+        {
             item.transform.DOMove(transform.position, 1f).OnComplete(() =>
             {
                 item.Damaged();

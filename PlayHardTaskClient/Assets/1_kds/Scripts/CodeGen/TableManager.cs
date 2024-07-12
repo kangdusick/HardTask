@@ -167,6 +167,8 @@ public enum EConfigTable
 	bossDefaultDamage = -1981101256,
 	[Description("playerDirectDamage")]
 	playerDirectDamage = 285616552,
+	[Description("newBlockMoveSpeed")]
+	newBlockMoveSpeed = -699488266,
 	
 }
 

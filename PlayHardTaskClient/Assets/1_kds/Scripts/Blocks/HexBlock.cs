@@ -132,7 +132,14 @@ public class HexBlock : MonoBehaviour
             blockImage.SetNativeSize();
         }
     }
-  
+    public void UseFairy()
+    {
+        if (!ReferenceEquals(_attatchedFairy, null))
+        {
+            _attatchedFairy.UseFairy();
+            _attatchedFairy = null;
+        }
+    }
     public void Damaged()
     {
         if(_isDamaged || IsCantDestroyAndMove)
@@ -140,11 +147,7 @@ public class HexBlock : MonoBehaviour
             return;
         }
         _isDamaged = true;
-        if(!ReferenceEquals(_attatchedFairy,null))
-        {
-            _attatchedFairy.UseFairy();
-            _attatchedFairy = null;
-        }
+        UseFairy();
         switch (eBlockType)
         {
             case EBlockType.item_bomb:

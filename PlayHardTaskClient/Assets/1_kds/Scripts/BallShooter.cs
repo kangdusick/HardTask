@@ -186,10 +186,15 @@ public class BallShooter : MonoBehaviour
             var bossBlock = IsBossAttackDirectly();
             if (bossBlock)
             {
+                bool isMoveDone = false;
                 await readyBall.SetHexBlockContainerWithMove(_destineHexBlockContainer, shootingBallSpeed, shootingBallMovingRoute);
-                readyBall.transform.DOMove(bossBlock.transform.position, 0.2f);
-                await UniTask.Delay(210);
-                readyBall.Damaged();
+                readyBall.transform.DOMove(bossBlock.transform.position, 0.2f).OnComplete(() =>
+                {
+                    Boss.Instance.OnDamaged(Player.Instance.directAttackDamageDict.FinalValue);
+                    readyBall.Damaged();
+                    isMoveDone = true;
+                });
+                await UniTask.WaitWhile(() => !isMoveDone);
             }
             else
             {
