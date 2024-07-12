@@ -24,9 +24,9 @@ public class PopCommon : BasePopup
         {
             LayoutRebuilder.ForceRebuildLayoutImmediate(item);
         }
-        if (descText.rectTransform.sizeDelta.x > 1000f)
+        if (descText.rectTransform.sizeDelta.x > 900f)
         {
-            descLayoutElement.preferredWidth = 1000f;
+            descLayoutElement.preferredWidth = 900f;
         }
         if(descText.rectTransform.sizeDelta.y>400f)
         {

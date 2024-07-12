@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using Sirenix.OdinInspector;
 using SRF;
 using System;
 using System.Collections.Generic;
@@ -100,6 +101,7 @@ public class BallShooter : MonoBehaviour
         TouchManager.Instance.OnTouchIng += SetDestineHexBlockContainer;
         TouchManager.Instance.OnTouchUp += ShootingBall;
         PrefareBall();
+        PrefareBall();
     }
     private void PrefareBall()
     {
@@ -108,6 +110,26 @@ public class BallShooter : MonoBehaviour
         readyBall.transform.localScale = Vector3.zero;
         readyBall.transform.DOScale(Vector3.one, 0.5f).SetEase(Ease.OutBack);
         _prepareBallList.Add(readyBall);
+    }
+    [Button]
+    private void RotateBall()
+    {
+        float[] angleList = { 90f, -30f, -150f, -270f };
+        //반지름: 75, 0번인덱스 위치: 90도, 1번인덱스 위치: 330도, 2번인덱스위치: 210도
+        //공이 2개 있는 경우
+        //볼 회전 0번인덱스 공은 1번인덱스 위치로, 1번인덱스 공은 0번위치로,
+        for(int i = 0; i<_prepareBallList.Count;i++)
+        {
+            if( i == _prepareBallList.Count-1)
+            {
+                _prepareBallList[i].RotateAroundCircle(angleList[i], angleList[3]);
+            }
+            else
+            {
+                _prepareBallList[i].RotateAroundCircle(angleList[i], angleList[i+1]);
+
+            }
+        }
     }
     void SetDestineHexBlockContainer(Vector2 screenPos) //마우스 클릭 중에 조준선이 활성화되며 구슬이 어디에 도착할지 표시해준다.
     {
@@ -183,6 +205,8 @@ public class BallShooter : MonoBehaviour
         }
         if (!ReferenceEquals(_destineHexBlockContainer, null))
         {
+            bool isMakeNewBall = readyBall.eBlockType == EBlockType.normal;
+            _prepareBallList.Remove(readyBall);
             isWhileShooting = true;
             _shootingLineRenderer.gameObject.SetActive(false);
             var bossBlock = IsBossAttackDirectly();
@@ -204,8 +228,10 @@ public class BallShooter : MonoBehaviour
                 EnableDestinePositionHint(false);
                 await FindMatchAndDestroyBalls(readyBall);
             }
-           
-            PrefareBall();
+            if (isMakeNewBall)
+            {
+                PrefareBall();
+            }
             OnPlayerTurnEnd?.Invoke();
             isWhileShooting = false;
         }
@@ -214,7 +240,7 @@ public class BallShooter : MonoBehaviour
     {
         foreach (var item in _destineHexBlockContainer.GetNeighborContainerBlockList())
         {
-            if(!ReferenceEquals(item.hexBlock,null) && item.hexBlock.eBlockType == EBlockType.boss)
+            if (!ReferenceEquals(item.hexBlock, null) && item.hexBlock.eBlockType == EBlockType.boss)
             {
                 return item.hexBlock;
             }

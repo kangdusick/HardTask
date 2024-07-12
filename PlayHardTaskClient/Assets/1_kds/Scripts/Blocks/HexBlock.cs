@@ -172,6 +172,36 @@ public class HexBlock : MonoBehaviour
         } 
         Destroy();
     }
+    public async UniTask RotateAroundCircle(float startAngle, float endAngle, float time = 0.4f)
+    {
+        var centerPos = BallShooter.Instance.transform.position;
+        float radius = 75f;
+
+        float elapsedTime = 0f;
+        float angleDiff = endAngle - startAngle; // 각도 차이를 구함
+
+        while (elapsedTime < time)
+        {
+            elapsedTime += Time.deltaTime;
+            float t = elapsedTime / time;
+
+            float currentAngle = Mathf.Lerp(startAngle, endAngle, t);
+            float radian = currentAngle * Mathf.Deg2Rad;
+            float x = Mathf.Cos(radian) * radius;
+            float y = Mathf.Sin(radian) * radius;
+
+            transform.position = centerPos + new Vector3(x, y, 0);
+
+            await UniTask.Yield(); // 다음 프레임까지 대기
+        }
+
+        // 최종 위치 설정
+        float finalRadian = endAngle * Mathf.Deg2Rad;
+        float finalX = Mathf.Cos(finalRadian) * radius;
+        float finalY = Mathf.Sin(finalRadian) * radius;
+
+        transform.position = centerPos + new Vector3(finalX, finalY, 0);
+    }
     private void Destroy()
     {
         if (!ReferenceEquals(this.hexBlockContainer, null) && this.hexBlockContainer.hexBlock == this || IsCantDestroyAndMove)
