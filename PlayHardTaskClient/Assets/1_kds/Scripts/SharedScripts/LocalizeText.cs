@@ -7,10 +7,10 @@ public class LocalizeText : MonoBehaviour
 {
     public List<ELanguageTable> eLanguageList;
     private TMP_Text _text;
-    private void Awake()
+    private void Start()
     {
         _text = GetComponent<TMP_Text>();
-        if(eLanguageList.Count> 0 )
+        if (eLanguageList.Count > 0)
         {
             _text.text = string.Empty;
             for (int i = 0; i < eLanguageList.Count; i++)
@@ -23,6 +23,5 @@ public class LocalizeText : MonoBehaviour
 
             }
         }
-       
     }
 }

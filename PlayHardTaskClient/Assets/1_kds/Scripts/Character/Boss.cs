@@ -2,15 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Boss : MonoBehaviour
+public class Boss : CharacterBase
 {
     public static Boss Instance;
-    public StatusDictionary hpDict= new();
     private bool _isCanAttack;
     public bool IsCanAttack => !ReferenceEquals(Instance,null) && _isCanAttack;
-    private void Awake()
+    
+    protected override void Awake()
     {
+        base.Awake();
         Instance = this;
         _isCanAttack = true;
+        hpDict[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.bossDefaultHp].FloatValue;
     }
 }

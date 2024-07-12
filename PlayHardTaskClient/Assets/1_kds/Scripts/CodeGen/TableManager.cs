@@ -161,6 +161,12 @@ public enum EConfigTable
 	fairyDefaultChance = 1922691485,
 	[Description("bossDefaultHp")]
 	bossDefaultHp = -1076017361,
+	[Description("playerDefaultHp")]
+	playerDefaultHp = -658334841,
+	[Description("bossDefaultDamage")]
+	bossDefaultDamage = -1981101256,
+	[Description("playerDirectDamage")]
+	playerDirectDamage = 285616552,
 	
 }
 
@@ -368,6 +374,14 @@ public enum ELanguageTable
 	rerollAbilityCardDesc = 662969992,
 	[Description("Prey")]
 	Prey = 4157339,
+	[Description("play")]
+	play = 4945189,
+	[Description("reaper")]
+	reaper = 626521422,
+	[Description("taejun")]
+	taejun = 569257602,
+	[Description("DetailInformation")]
+	DetailInformation = -1055320842,
 	[Description("LoanSharksProposal")]
 	LoanSharksProposal = -1143415491,
 	[Description("LoanSharksProposalDesc")]

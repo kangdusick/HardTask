@@ -43,6 +43,30 @@
         "IntArray": [],
         "FloatArray": [],
         "StringArray": []
+      },
+      {
+        "key": "playerDefaultHp",
+        "IntValue": null,
+        "FloatValue": "1000",
+        "IntArray": [],
+        "FloatArray": [],
+        "StringArray": []
+      },
+      {
+        "key": "bossDefaultDamage",
+        "IntValue": null,
+        "FloatValue": "100",
+        "IntArray": [],
+        "FloatArray": [],
+        "StringArray": []
+      },
+      {
+        "key": "playerDirectDamage",
+        "IntValue": null,
+        "FloatValue": "60",
+        "IntArray": [],
+        "FloatArray": [],
+        "StringArray": []
       }
     ]
   },
@@ -552,6 +576,26 @@
         "key": "Prey",
         "kr": "모이",
         "en": "Feed"
+      },
+      {
+        "key": "play",
+        "kr": "플레이",
+        "en": "Play"
+      },
+      {
+        "key": "reaper",
+        "kr": "사신",
+        "en": "Reaper"
+      },
+      {
+        "key": "taejun",
+        "kr": "서태준",
+        "en": "SeoTaeJun"
+      },
+      {
+        "key": "DetailInformation",
+        "kr": "상세정보",
+        "en": "Detail Information"
       },
       {
         "key": "LoanSharksProposal",

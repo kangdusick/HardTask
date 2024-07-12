@@ -35,26 +35,20 @@ MonoBehaviour:
     m_SerializedLabels:
     - prefab
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 6dc67ed69dffae0488d0783bb1ac759f
-    m_Address: Projectile
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - prefab
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f175587f1a73fcb48a11a63fcf8cc6ee
     m_Address: PopCommon
     m_ReadOnly: 0
     m_SerializedLabels:
     - prefab
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 5e43e445d0e4c404c9255b0e185ea9f5
-    m_Address: TopDistroyEffect
+  - m_GUID: 02df53a57b9644040aa6c14668f95c19
+    m_Address: Fairy
     m_ReadOnly: 0
     m_SerializedLabels:
     - prefab
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 02df53a57b9644040aa6c14668f95c19
-    m_Address: Fairy
+  - m_GUID: 941d42e67d4a0a34b91ead09fbc5266d
+    m_Address: DamageText
     m_ReadOnly: 0
     m_SerializedLabels:
     - prefab

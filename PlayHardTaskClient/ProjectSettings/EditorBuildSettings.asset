@@ -9,10 +9,13 @@ EditorBuildSettings:
     path: Assets/Scenes/SampleScene.unity
     guid: 2cda990e2423bbf4892e6590ba056729
   - enabled: 1
-    path: Assets/1_kds/Scenes/Game.unity
-    guid: e64c96769dc6e154e871ef522d2bec03
+    path: Assets/1_kds/Scenes/Load.unity
+    guid: 750edf885ffbc654aa086b1678951dbb
   - enabled: 1
     path: Assets/1_kds/Scenes/Transition.unity
     guid: 75c7648c83af42b4a9953a7559cecb95
+  - enabled: 1
+    path: Assets/1_kds/Scenes/Game.unity
+    guid: e64c96769dc6e154e871ef522d2bec03
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: c87692b8027c3b74c90ef06f36c0527a, type: 2}

@@ -15,14 +15,12 @@ public enum EPrefab
 	HexBlockContainer = -1625853502,
 	[Description("NormalDestroyParticleEffect")]
 	NormalDestroyParticleEffect = -1120169303,
-	[Description("Projectile")]
-	Projectile = -810867658,
 	[Description("PopCommon")]
 	PopCommon = 1367575927,
-	[Description("TopDistroyEffect")]
-	TopDistroyEffect = 605402789,
 	[Description("Fairy")]
 	Fairy = 145775554,
+	[Description("DamageText")]
+	DamageText = 92199005,
 	[Description("HexBlock")]
 	HexBlock = 1671295265,
 	

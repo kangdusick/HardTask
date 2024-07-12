@@ -100,8 +100,8 @@ public class TMPLinkDetector : MonoBehaviour
         gameObject.layer = (int)ELayers.TMPLink;
         UpdateColliderSizeAndOffset();
         TouchManager.Instance.OnTouchDownLayer[ELayers.TMPLink]-=OnTouchDown;
-        TouchManager.Instance.OnTouchDownLayer[ELayers.TMPLink]+=OnTouchDown;
-        TouchManager.Instance.OnTouchUpLayer[ELayers.TMPLink] -= OnTouchUp;
+        TouchManager.Instance.OnTouchDownLayer[ELayers.TMPLink]+= OnTouchDown;
+        TouchManager.Instance.OnTouchUpLayer[ELayers.TMPLink]-=OnTouchUp;
         TouchManager.Instance.OnTouchUpLayer[ELayers.TMPLink] += OnTouchUp;
 
         baseCanvas = FindFirstParentCanvas(transform);
@@ -268,6 +268,16 @@ public class TMPLinkDetector : MonoBehaviour
         savedLinkID = string.Empty;
         var title = string.Empty;
         var descText = string.Empty;
+        // linkInfo의 ID가 "valueDesc"를 포함하는지 확인
+        if (KMP.KMPSearch(linkID, StatusDictionary.linkKey).Count > 0)
+        {
+            // "valueDesc"에 해당하는 로직 처리
+            title = "상세 정보";
+            var index = int.Parse(linkID.Replace(StatusDictionary.linkKey, ""));
+            descText = StatusDictionary.statusDictionaryDict[index].TmpLinkDesc; // 이곳에서 tmpLinkDesc를 사용
+        }
+        else
+        {
             var eLinkTable = linkID.ParseEnum<ELinkTable>();
             var linkTable = TableManager.LinkTableDict[eLinkTable];
             switch (GameUtil.language)
@@ -286,14 +296,14 @@ public class TMPLinkDetector : MonoBehaviour
                     descText = (linkTable.LanguageKey).LocalIzeText();
                     break;
             }
-        
+        }
 
         if (!popLinkInfoSet.Contains(linkID))
         {
-            //popLinkInfoSet.Add(linkID);
-            //var popCommon = PoolableManager.Instance.Instantiate<PopCommon>(EPrefab.PopCommon);
-            //popCommon.OpenPopup(title, descText);
-            //PoolableManager.Instance.goEprefabFinder[popCommon.gameObject].OnDestroy.AddListener(this, () => { OnDestroyPopup(linkID); });
+            popLinkInfoSet.Add(linkID);
+            var popCommon = PoolableManager.Instance.Instantiate<PopCommon>(EPrefab.PopCommon);
+            popCommon.OpenPopup(title, descText);
+            PoolableManager.Instance.goEprefabFinder[popCommon.gameObject].OnDestroy+=() => { OnDestroyPopup(linkID); };
         }
     }
     private void OnDestroyPopup(string linkID)

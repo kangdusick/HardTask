@@ -11,4 +11,5 @@ public enum ETag
 {
     BlockEditor,
     HexBlockContainer,
+    WorldCanvas,
 }

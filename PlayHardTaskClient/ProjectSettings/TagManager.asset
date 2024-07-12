@@ -6,6 +6,7 @@ TagManager:
   tags:
   - BlockEditor
   - HexBlockContainer
+  - WorldCanvas
   layers:
   - Default
   - TransparentFX

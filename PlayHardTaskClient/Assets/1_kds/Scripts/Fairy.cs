@@ -14,17 +14,22 @@ public class Fairy : MonoBehaviour
     }
     public async UniTask UseFairy()
     {
+        bool isMoveDone = false;
         transform.DOKill();
         transform.SetParent(BlockEditor.Instance.transform);
         if(Boss.Instance.IsCanAttack)
         {
-            transform.DOMove(Boss.Instance.transform.position, 0.5f);
+            transform.DOMove(Boss.Instance.transform.position, 500f).SetSpeedBased().OnComplete(() => 
+            {
+                Boss.Instance.OnDamaged(Player.Instance.fairyDamageDict.FinalValue);
+                isMoveDone = true;
+            });
         }
         else
         {
 
         }
-        await UniTask.Delay(501);
+        await UniTask.WaitWhile(() => !isMoveDone);
         PoolableManager.Instance.Destroy(gameObject);
     }
 }
