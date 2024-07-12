@@ -1,11 +1,10 @@
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using SRF;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Assertions.Must;
 
 class UnionFind
 {
@@ -91,6 +90,8 @@ public class BallShooter : MonoBehaviour
     private const float shootingBallSpeed = 1200f;
     public bool isWhileShooting;
     [SerializeField] HexBlock readyBall;
+    List<HexBlock> _prepareBallList = new();
+    public Action OnPlayerTurnEnd;
     private void Awake()
     {
         Instance = this;
@@ -106,6 +107,7 @@ public class BallShooter : MonoBehaviour
         readyBall.Init(HexBlockContainer.EColorList.Random(), EBlockType.normal);
         readyBall.transform.localScale = Vector3.zero;
         readyBall.transform.DOScale(Vector3.one, 0.5f).SetEase(Ease.OutBack);
+        _prepareBallList.Add(readyBall);
     }
     void SetDestineHexBlockContainer(Vector2 screenPos) //마우스 클릭 중에 조준선이 활성화되며 구슬이 어디에 도착할지 표시해준다.
     {
@@ -204,6 +206,7 @@ public class BallShooter : MonoBehaviour
             }
            
             PrefareBall();
+            OnPlayerTurnEnd?.Invoke();
             isWhileShooting = false;
         }
     }
@@ -249,10 +252,6 @@ public class BallShooter : MonoBehaviour
         }
 
         await BallDestroyer.Instance.DestroyWithBallDestroyer(destroyWithFall);
-        foreach (var item in HexBlockContainer.blockSpawnLineList)
-        {
-            //item.PushAndSpawnBlocksInLine();
-        }
     }
     private void FindAllAttatchmentPoint()
     {

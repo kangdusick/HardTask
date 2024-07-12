@@ -23,12 +23,6 @@ public class BlockSpawnLine : MonoBehaviour
         _isWhileSpawningCnt = 0;
         SetSpawnLineIndexList();
     }
-    private async void Start()
-    {
-        await UniTask.DelayFrame(1);
-        HexBlockContainer.blockSpawnLineList.Add(this);
-        PushAndSpawnBlocksInLine();
-    }
     private void SetSpawnLineIndexList()
     {
         if(_isSetSpawnLineDone)
@@ -50,6 +44,7 @@ public class BlockSpawnLine : MonoBehaviour
     }
     public async UniTask PushAndSpawnBlocksInLine()
     {
+        await UniTask.WaitWhile(()=>!_isSetSpawnLineDone);
         _isWhileSpawningCnt++;
         List<UniTask> moveTaskList= new List<UniTask>();
         while (true)  //스폰 라인에 빈 공간이 있으면 한칸씩 이동 후 구슬 하나 생성

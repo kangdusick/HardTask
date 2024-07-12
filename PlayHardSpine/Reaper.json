@@ -1,0 +1,45 @@
+{ "skeleton": { "images": "C:/Users/User/Desktop/HardTask/PlayHardSpine/images/" },
+"PhotoshopToSpine": { "scale": 1, "padding": 10, "trim": true },
+"bones": [
+	{ "name": "root" }
+],
+"slots": [
+	{ "name": "LeftWing", "bone": "root", "attachment": "LeftWing" },
+	{ "name": "RightWing", "bone": "root", "attachment": "RightWing" },
+	{ "name": "Body", "bone": "root", "attachment": "Body" },
+	{ "name": "RightArmLower", "bone": "root", "attachment": "RightArmLower" },
+	{ "name": "RightArmUpper", "bone": "root", "attachment": "RightArmUpper" },
+	{ "name": "LeftArmLower", "bone": "root", "attachment": "LeftArmLower" },
+	{ "name": "LeftArmUpper", "bone": "root", "attachment": "LeftArmUpper" },
+	{ "name": "Weapon", "bone": "root", "attachment": "Weapon" }
+],
+"skins": {
+	"default": {
+		"LeftWing": {
+			"LeftWing": { "x": 214, "y": -470.5, "width": 412, "height": 729 }
+		},
+		"RightWing": {
+			"RightWing": { "x": 658, "y": -438.5, "width": 412, "height": 729 }
+		},
+		"Body": {
+			"Body": { "x": 394, "y": -599, "width": 634, "height": 916 }
+		},
+		"RightArmLower": {
+			"RightArmLower": { "x": 524, "y": -529.5, "width": 118, "height": 205 }
+		},
+		"RightArmUpper": {
+			"RightArmUpper": { "x": 536.5, "y": -419.5, "width": 165, "height": 285 }
+		},
+		"LeftArmLower": {
+			"LeftArmLower": { "x": 316, "y": -529.5, "width": 118, "height": 205 }
+		},
+		"LeftArmUpper": {
+			"LeftArmUpper": { "x": 303.5, "y": -419.5, "width": 165, "height": 285 }
+		},
+		"Weapon": {
+			"Weapon": { "x": 655, "y": -441, "width": 736, "height": 878 }
+		}
+	}
+},
+"animations": { "animation": {} }
+}

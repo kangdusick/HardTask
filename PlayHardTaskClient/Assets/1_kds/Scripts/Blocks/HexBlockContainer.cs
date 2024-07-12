@@ -14,7 +14,6 @@ public class HexBlockContainer : MonoBehaviour
 {
     public static HexBlockContainer[,] hexBlockContainerMatrix;
     public static List<HexBlockContainer> hexBlockContainerList = new();
-    public static List<BlockSpawnLine> blockSpawnLineList = new();
     public static readonly List<EColor> EColorList = new List<EColor>() { EColor.blue, EColor.red, EColor.yellow };
     public readonly static (int x, int y)[] dirList = new (int x, int y)[6] { (2, 0), (-2, 0), (1, 1), (-1, -1), (1, -1), (-1, 1) };
     public HexBlock hexBlock;
@@ -39,7 +38,6 @@ public class HexBlockContainer : MonoBehaviour
     }
     public static void InitHexBlockContainerMatrix(int width, int height)
     {
-        blockSpawnLineList.Clear();
         hexBlockContainerMatrix = new HexBlockContainer[width, height];
         hexBlockContainerList.Clear();
         var hexBlockContainerLGoist = GameObject.FindGameObjectsWithTag(ETag.HexBlockContainer.ToString());
