@@ -24,5 +24,6 @@ public class GameManager : MonoBehaviour
         float targetHeight = 1920f;
         float targetRate = targetWidth / targetHeight;
         Camera.main.orthographicSize = 820f * targetRate / screenRate;
+        PoolableManager.Instance.Instantiate<PopCommon>(EPrefab.PopCommon).OpenPopup(ELanguageTable.changePoint_Title.LocalIzeText(),ELanguageTable.changePoint_Desc.LocalIzeText());
     }
 }

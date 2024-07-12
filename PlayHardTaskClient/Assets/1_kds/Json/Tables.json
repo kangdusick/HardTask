@@ -75,6 +75,22 @@
         "IntArray": [],
         "FloatArray": [],
         "StringArray": []
+      },
+      {
+        "key": "stunDuration",
+        "IntValue": null,
+        "FloatValue": "3",
+        "IntArray": [],
+        "FloatArray": [],
+        "StringArray": []
+      },
+      {
+        "key": "requireBallCntForStun",
+        "IntValue": null,
+        "FloatValue": "30",
+        "IntArray": [],
+        "FloatArray": [],
+        "StringArray": []
       }
     ]
   },
@@ -84,6 +100,16 @@
         "key": "valueTypeDefine",
         "kr": "변수 타입 지정",
         "en": "Variable Type Specification"
+      },
+      {
+        "key": "changePoint_Desc",
+        "kr": "변경사항\n1. 보스에게 직접 구슬 맞출 시 큰 데미지를 입힙니다.\n2. 구슬을 일정 개수 파괴할 떄마다 보스가 스턴에 걸리며, 스턴상태일때는 구슬 리젠이 안됩니다.\n3. 보스의 페이즈가 변경될 때마다 새로운 어빌리티 카드를 얻습니다.\n\n보스 페이즈 시스템\n1페이즈: 구슬 리젠이 안되며 5턴마다 공격합니다.\n2페이즈: 왼쪽 날개가 돋아나며 왼쪽라인의 구슬이 리젠됩니다. 4턴마다 공격합니다.\n3페이즈: 오른쪽 날개가 돋아나며 양쪽라인의 구슬이 모두 리젠됩니다. 3턴마다 공격합니다.\n4페이즈: 보스가 은신하며 모든 구슬을 파괴하기 전까지 매 턴마다 체력이 5% 회복됩니다.\n5페이즈: 구슬 리젠 라인이 변경되며 2턴마다 공격합니다.",
+        "en": "Changes\n1. When the orb directly hits the boss, it inflicts heavy damage.\n2. Every time a certain number of orbs are destroyed, the boss is stunned, and while in the stunned state, orbs do not respawn.\n3. Each time the boss's phase changes, you obtain a new ability card.\n\nBoss Phase System\nPhase 1: Orbs do not respawn, and the boss attacks every 5 turns.\nPhase 2: The left wing sprouts, and orbs on the left line respawn. The boss attacks every 4 turns.\nPhase 3: The right wing sprouts, and orbs on both sides respawn. The boss attacks every 3 turns.\nPhase 4: The boss becomes invisible and regenerates 5% health every turn until all orbs are destroyed.\nPhase 5: The orb respawn line changes, and the boss attacks every 2 turns."
+      },
+      {
+        "key": "changePoint_Title",
+        "kr": "변경사항",
+        "en": "Change Point"
       },
       {
         "key": "Seal",

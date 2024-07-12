@@ -8,7 +8,7 @@ public class Player : CharacterBase
     public StatusDictionary fairySpawnChanceDict = new();
     public StatusDictionary fairyDamageDict = new();
     public StatusDictionary directAttackDamageDict = new(); //보스에게 직접 구슬 발사 시 입히는 데미지
-
+    public StatusDictionary stunDurationDict = new();
     protected override void Awake()
     {
         base.Awake();

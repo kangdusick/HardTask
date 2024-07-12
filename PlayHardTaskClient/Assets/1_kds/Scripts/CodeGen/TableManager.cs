@@ -169,6 +169,10 @@ public enum EConfigTable
 	playerDirectDamage = 285616552,
 	[Description("newBlockMoveSpeed")]
 	newBlockMoveSpeed = -699488266,
+	[Description("stunDuration")]
+	stunDuration = -1760957569,
+	[Description("requireBallCntForStun")]
+	requireBallCntForStun = -229332663,
 	
 }
 
@@ -176,6 +180,10 @@ public enum ELanguageTable
 {
     [Description("valueTypeDefine")]
 	valueTypeDefine = -1227803469,
+	[Description("changePoint_Desc")]
+	changePoint_Desc = 443270917,
+	[Description("changePoint_Title")]
+	changePoint_Title = 871358152,
 	[Description("Seal")]
 	Seal = 4142072,
 	[Description("attack")]
