@@ -32,6 +32,7 @@ public class Player : CharacterBase
         requireBallForNeroOrbDict[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.requireBallForNeroOrb].FloatValue;
         smallBombSpawnChanceDict[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.smallBombSpawnChance].FloatValue;
         neroDirectAttackDamageDict[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.neroBallDirectDamage].FloatValue;
+        stunDurationDict[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.stunDuration].FloatValue;
     }
     
    

@@ -54,6 +54,7 @@ public class StatusDictionary : ObservableDictionary<(ELanguageTable status, ESt
     private int dictIndex;
     public ObscuredFloat subValue { get; private set; } // 최종 값: 공격속도, subValue: 공격주기
     public ObscuredFloat FinalValue { get; private set; }
+    public ObscuredInt FinalValue_RoundToInt { get; private set; }
     Func<ObscuredFloat, ObscuredFloat> setSubValueFunc;
     private ELanguageTable subValueDesc;
     public string SubValueDescription
@@ -368,6 +369,7 @@ public class StatusDictionary : ObservableDictionary<(ELanguageTable status, ESt
     private void SetFinalValue()
     {
         FinalValue = (baseValue + baseValueByReference) * (1f + (adder + adderByReference) * 0.01f) * multiplier * multiplierByReference / (divider * dividerByReference);
+        FinalValue_RoundToInt = Mathf.RoundToInt(FinalValue);
         if (!ReferenceEquals(setSubValueFunc, null))
         {
             subValue = setSubValueFunc(FinalValue);

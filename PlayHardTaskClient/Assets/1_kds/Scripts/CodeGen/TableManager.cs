@@ -406,6 +406,8 @@ public enum ELanguageTable
 	reaper = 626521422,
 	[Description("taejun")]
 	taejun = 569257602,
+	[Description("stun")]
+	stun = 5135963,
 	[Description("DetailInformation")]
 	DetailInformation = -1055320842,
 	[Description("LoanSharksProposal")]

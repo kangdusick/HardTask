@@ -56,7 +56,7 @@ public class NeroOrbContainer : MonoBehaviour
         gameObject.SetActive(isEnable);
         if(isEnable)
         {
-            RemainNeroOrbCount = Mathf.RoundToInt(Player.Instance.requireBallForNeroOrbDict.FinalValue);
+            RemainNeroOrbCount = Player.Instance.requireBallForNeroOrbDict.FinalValue_RoundToInt;
         }
     }
 }

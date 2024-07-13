@@ -10,7 +10,7 @@ public class Boss : CharacterBase
 {
     public static Boss Instance;
     public StatusDictionary requireBallCntForStunDict = new();
-    public StatusDictionary attackCooldown = new();
+    public StatusDictionary attackCooldownDict = new();
 
     private bool _isCanAttack;
     public bool IsCanAttack => !ReferenceEquals(Instance, null) && _isCanAttack;
@@ -27,9 +27,43 @@ public class Boss : CharacterBase
 
     private TrackEntry _spineCharacterTrackEntry;
 
-    private int Stun;
+    private int _stun;
+    private int Stun
+    {
+        get { return _stun; }
+        set
+        {
+            _stun = value;
+            _stunText.text = $"{ELanguageTable.stun.LocalIzeText()}:{_stun}";
+            if(_stun<=0)
+            {
+                _currentIdleAnim = EReaperAnim.Idle;
+                SetAnim(EReaperAnim.Idle);
+                RmainBallCountForStun = requireBallCntForStunDict.FinalValue_RoundToInt;
+            }
+        }
+    }
     private int _rmainBallCountForStun;
-    private int RmainBallCountForStun;
+    private int RmainBallCountForStun
+    {
+        get { return _rmainBallCountForStun; }
+        set
+        {
+            if(Stun>0)
+            {
+                return;
+            }
+            _rmainBallCountForStun = value;
+            _stunText.text = $"{ELanguageTable.stun.LocalIzeText()}:{_rmainBallCountForStun}";
+            if(_rmainBallCountForStun<=0)
+            {
+                _currentIdleAnim = EReaperAnim.Stun;
+                SetAnim(EReaperAnim.Stun);
+                RemainAttackCooldown = attackCooldownDict.FinalValue_RoundToInt;
+                Stun = Player.Instance.stunDurationDict.FinalValue_RoundToInt;
+            }
+        }
+    }
     private int _remainAttackCooldown;
     private int RemainAttackCooldown
     {
@@ -44,7 +78,7 @@ public class Boss : CharacterBase
             if (_remainAttackCooldown <= 0)
             {
                 DoAttack();
-                _remainAttackCooldown = Mathf.RoundToInt(attackCooldown.FinalValue);
+                _remainAttackCooldown = attackCooldownDict.FinalValue_RoundToInt;
             }
             _attackCooldownText.text = $"{ELanguageTable.attack}:{_remainAttackCooldown}";
         }
@@ -68,23 +102,23 @@ public class Boss : CharacterBase
             switch (_phase)
             {
                 case EBossPhase.Default:
-                    attackCooldown[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.bossAttackCooldown1].FloatValue;
-                    RemainAttackCooldown = Mathf.RoundToInt(attackCooldown.FinalValue);
+                    attackCooldownDict[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.bossAttackCooldown1].FloatValue;
+                    RemainAttackCooldown = attackCooldownDict.FinalValue_RoundToInt;
                     break;
                 case EBossPhase.LeftWing:
                     SetSkin("LeftWing");
                     SetAnim(EReaperAnim.LeftWingGrow);
-                    attackCooldown[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.bossAttackCooldown2].FloatValue;
+                    attackCooldownDict[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.bossAttackCooldown2].FloatValue;
                     break;
                 case EBossPhase.DoubleWing:
                     SetSkin("DoubleWing");
                     SetAnim(EReaperAnim.RightWingGrow);
-                    attackCooldown[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.bossAttackCooldown3].FloatValue;
+                    attackCooldownDict[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.bossAttackCooldown3].FloatValue;
                     break;
                 case EBossPhase.Hide:
                     break;
                 case EBossPhase.Final:
-                    attackCooldown[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.bossAttackCooldown5].FloatValue;
+                    attackCooldownDict[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.bossAttackCooldown5].FloatValue;
                     break;
             }
         }
@@ -107,8 +141,8 @@ public class Boss : CharacterBase
         _isCanAttack = true;
         hpDict[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.bossDefaultHp].FloatValue;
         attackDict[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.bossAttack].FloatValue;
-        Player.Instance.OnPlayerTurnEnd -= BallSpawnRoutine;
-        Player.Instance.OnPlayerTurnEnd += BallSpawnRoutine;
+        requireBallCntForStunDict[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.requireBallCntForStun].FloatValue;
+
         OnCurrentHpChange -= PhaseChange;
         OnCurrentHpChange += PhaseChange;
 
@@ -120,11 +154,14 @@ public class Boss : CharacterBase
         _skeletonGraphic.AnimationState.Complete -= OnAnimationComplete;
         _skeletonGraphic.AnimationState.Complete += OnAnimationComplete;
         _currentIdleAnim = EReaperAnim.Idle;
+
         SetAnim(_currentIdleAnim);
         HexBlock.OnBlockDamaged -= OnBlockDamaged;
         HexBlock.OnBlockDamaged += OnBlockDamaged;
         Player.Instance.OnPlayerTurnEnd -= OnPlayerTurnEnd;
         Player.Instance.OnPlayerTurnEnd += OnPlayerTurnEnd;
+
+        RmainBallCountForStun = requireBallCntForStunDict.FinalValue_RoundToInt;
     }
     private void OnBlockDamaged()
     {
@@ -132,7 +169,12 @@ public class Boss : CharacterBase
     }
     private void OnPlayerTurnEnd()
     {
+        if(_currentIdleAnim == EReaperAnim.Stun)
+        {
+            Stun--;
+        }
         RemainAttackCooldown--;
+        BallSpawnRoutine();
     }
     private void PhaseChange()
     {
@@ -157,6 +199,10 @@ public class Boss : CharacterBase
     }
     private void BallSpawnRoutine()
     {
+        if (Stun > 0)
+        {
+            return;
+        }
         switch (Phase)
         {
             case EBossPhase.LeftWing:
