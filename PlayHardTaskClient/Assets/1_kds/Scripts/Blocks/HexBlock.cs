@@ -16,10 +16,11 @@ public enum EBlockType
 {
     Empty = 0,
     normal = 100,
-    neroOrb = 400,
+    bomb_Range2_neroOrb = 400,
     attatchPoint = 500,
     attatchPoint_Spawn = 600,
-    boss = 700
+    boss = 700,
+    bomb_Range1 = 800,
 }
 public class HexBlock : MonoBehaviour
 {
@@ -54,6 +55,8 @@ public class HexBlock : MonoBehaviour
             case EBlockType.Empty:
             case EBlockType.attatchPoint:
             case EBlockType.attatchPoint_Spawn:
+            case EBlockType.bomb_Range2_neroOrb:
+            case EBlockType.bomb_Range1:
                 this.eColor = EColor.none;
                 break;
         }
@@ -109,7 +112,7 @@ public class HexBlock : MonoBehaviour
     private void UpdateBlockImage()
     {
         var spriteName = $"{(eColor == EColor.none ? string.Empty : eColor.ToString() + "_")}{(eBlockType == EBlockType.Empty ? string.Empty : eBlockType.ToString())}";
-        if(eBlockType == EBlockType.attatchPoint || eBlockType == EBlockType.boss || eBlockType == EBlockType.neroOrb)
+        if(eBlockType == EBlockType.attatchPoint || eBlockType == EBlockType.boss || eBlockType == EBlockType.bomb_Range2_neroOrb || eBlockType == EBlockType.bomb_Range1)
         {
             spriteName = ESprite.empty.ToString();
         }
@@ -139,6 +142,17 @@ public class HexBlock : MonoBehaviour
             _attatchedFairy = null;
         }
     }
+    private void BombRangeDestroy(int bombRange)
+    {
+        var bombRangeList = hexBlockContainer.GetNeighborContainerBlockList(bombRange);
+        foreach (var item in bombRangeList)
+        {
+            if (!ReferenceEquals(item.hexBlock, null))
+            {
+                item.hexBlock.Damaged();
+            }
+        }
+    }
     public void Damaged()
     {
         if(_isDamaged || IsCantDestroyAndMove)
@@ -149,7 +163,11 @@ public class HexBlock : MonoBehaviour
         UseFairy();
         switch (eBlockType)
         {
-            case EBlockType.neroOrb:
+            case EBlockType.bomb_Range2_neroOrb:
+                BombRangeDestroy(2);
+                break;
+            case EBlockType.bomb_Range1:
+                BombRangeDestroy(1);
                 break;
             case EBlockType.normal:
                 Color particleColor = Color.blue;

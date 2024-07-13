@@ -99,6 +99,14 @@
         "IntArray": [],
         "FloatArray": [],
         "StringArray": []
+      },
+      {
+        "key": "smallBombSpawnChance",
+        "IntValue": null,
+        "FloatValue": "10",
+        "IntArray": [],
+        "FloatArray": [],
+        "StringArray": []
       }
     ]
   },

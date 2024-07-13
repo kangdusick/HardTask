@@ -23,6 +23,8 @@ public enum EPrefab
 	DamageText = 92199005,
 	[Description("NeroOrb")]
 	NeroOrb = -889424,
+	[Description("SmallBomb")]
+	SmallBomb = 658824888,
 	[Description("HexBlock")]
 	HexBlock = 1671295265,
 	

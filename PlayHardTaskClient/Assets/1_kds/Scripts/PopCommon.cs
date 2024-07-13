@@ -43,7 +43,7 @@ public class PopCommon : BasePopup
         OkBtn.onClick.AddListener(() =>
         {
             OnClickOk?.Invoke();
-            //OnClose();
+            OnClose();
         });
 
     }

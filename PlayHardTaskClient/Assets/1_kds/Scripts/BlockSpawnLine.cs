@@ -61,10 +61,18 @@ public class BlockSpawnLine : MonoBehaviour
                 moveTaskList.Add(_spawnLineHexBlockContainerList[i].hexBlock.SetHexBlockContainerWithMove(_spawnLineHexBlockContainerList[i + 1], _newBlockMoveSpeed));
             }
 
-
-            var spawnedBlock = PoolableManager.Instance.Instantiate<HexBlock>(EPrefab.HexBlock, _spawnPointHexBlockContainer.transform.position);
-            spawnedBlock.Init(HexBlockContainer.EColorList.Random(), EBlockType.normal);
-            spawnedBlock.AttatchFairy(20f);
+            HexBlock spawnedBlock = null;
+            if (Random.Range(0,100f)<= Player.Instance.smallBombSpawnChanceDict.FinalValue)
+            {
+                spawnedBlock = PoolableManager.Instance.Instantiate<HexBlock>(EPrefab.SmallBomb, _spawnPointHexBlockContainer.transform.position);
+                spawnedBlock.Init(EColor.none, EBlockType.bomb_Range1);
+            }
+            else
+            {
+                spawnedBlock = PoolableManager.Instance.Instantiate<HexBlock>(EPrefab.HexBlock, _spawnPointHexBlockContainer.transform.position);
+                spawnedBlock.Init(HexBlockContainer.EColorList.Random(), EBlockType.normal);
+                spawnedBlock.AttatchFairy(Player.Instance.fairySpawnChanceDict.FinalValue);
+            }
             moveTaskList.Add(spawnedBlock.SetHexBlockContainerWithMove(_spawnLineHexBlockContainerList[0], _newBlockMoveSpeed));
             await UniTask.WhenAll(moveTaskList);
         }

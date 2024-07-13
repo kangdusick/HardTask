@@ -92,6 +92,7 @@ public class BallShooter : MonoBehaviour
     public bool isWhileBallShooterRoutine;
     List<HexBlock> _prepareBallList = new();
     static readonly float[] angleList = { 90f, -30f, -150f, -270f };
+    private List<HexBlockContainer> _enabledHintBlockList = new(); 
     private void Awake()
     {
         Instance = this;
@@ -122,7 +123,7 @@ public class BallShooter : MonoBehaviour
             if (isNeroOrb)
             {
                 newBall = PoolableManager.Instance.Instantiate<HexBlock>(EPrefab.NeroOrb, _shootingStartPoint.position);
-                newBall.Init(EColor.none, EBlockType.neroOrb);
+                newBall.Init(EColor.none, EBlockType.bomb_Range2_neroOrb);
             }
             else
             {
@@ -218,6 +219,19 @@ public class BallShooter : MonoBehaviour
             if (isEnable)
             {
                 _destineHexBlockContainer.EnableHintEffect(true);
+                _enabledHintBlockList.Add(_destineHexBlockContainer);
+
+                if (_prepareBallList[0].eBlockType == EBlockType.bomb_Range2_neroOrb)
+                {
+                    var neroOrbRange = _destineHexBlockContainer.GetNeighborContainerBlockList(2);
+                    foreach (var item in neroOrbRange)
+                    {
+                        item.EnableHintEffect(true);
+                        _enabledHintBlockList.Add(item);
+                    }
+                   
+                }
+
                 _shootingLineRenderer.gameObject.SetActive(true);
                 _shootingLineRenderer.positionCount = shootingBallMovingRoute.Count - 1;
                 _shootingLineRenderer.SetPositions(shootingBallMovingRoute.GetRange(0, shootingBallMovingRoute.Count - 1).ToArray());
@@ -226,7 +240,11 @@ public class BallShooter : MonoBehaviour
             else
             {
                 _shootingLineRenderer.gameObject.SetActive(false);
-                _destineHexBlockContainer.EnableHintEffect(false);
+                foreach (var item in _enabledHintBlockList)
+                {
+                    item.EnableHintEffect(false);
+                }
+                _enabledHintBlockList.Clear();
                 _destineHexBlockContainer = null;
 
             }
@@ -260,9 +278,9 @@ public class BallShooter : MonoBehaviour
             else
             {
                 await shootingBall.SetHexBlockContainerWithMove(_destineHexBlockContainer, shootingBallSpeed, shootingBallMovingRoute);
-                EnableDestinePositionHint(false);
                 await FindMatchAndDestroyBalls(shootingBall);
             }
+            EnableDestinePositionHint(false);
             PrefareBall();
             isWhileBallShooterRoutine = false;
             Player.Instance.TurnEnd();
@@ -282,14 +300,25 @@ public class BallShooter : MonoBehaviour
     private async UniTask FindMatchAndDestroyBalls(HexBlock shootedBall)
     {
         UnionFind unionFindSameColor = new UnionFind(HexBlockContainer.hexBlockContainerList.Count + 1);
+        HexBlockContainer shootedBallContainer = shootedBall.hexBlockContainer;
         //shootedBall과 같은 색상의 볼이 3개 이상이면 파괴
-        UnionSameColorHexBlocks(shootedBall.hexBlockContainer, unionFindSameColor);
+        UnionSameColorHexBlocks(shootedBallContainer, unionFindSameColor);
         var unionedHexBlockList = GetUnionedHexBlockList(shootedBall, unionFindSameColor);
         if (unionedHexBlockList.Count >= 3)
         {
             foreach (var item in unionedHexBlockList)
             {
                 item.Damaged();
+            }
+        }
+
+        var checkBombList = shootedBallContainer.GetNeighborContainerBlockList(1); //발사된 곳 주변에 폭탄블럭이 있다면 연쇄폭파
+        checkBombList.Add(shootedBallContainer);
+        foreach (var item in checkBombList)
+        {
+            if(!ReferenceEquals(item.hexBlock,null) && item.hexBlock.eBlockType.ToString().Contains("bomb"))
+            {
+                item.hexBlock.Damaged();
             }
         }
         //attatch포인트와 연결되어있지 않은 그룹 모두 낙하파괴

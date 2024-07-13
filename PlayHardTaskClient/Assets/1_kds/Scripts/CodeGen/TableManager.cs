@@ -175,6 +175,8 @@ public enum EConfigTable
 	requireBallCntForStun = -229332663,
 	[Description("requireBallForNeroOrb")]
 	requireBallForNeroOrb = 992950537,
+	[Description("smallBombSpawnChance")]
+	smallBombSpawnChance = 1610106077,
 	
 }
 

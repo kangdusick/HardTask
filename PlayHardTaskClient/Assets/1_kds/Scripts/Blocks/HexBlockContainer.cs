@@ -15,7 +15,8 @@ public class HexBlockContainer : MonoBehaviour
     public static HexBlockContainer[,] hexBlockContainerMatrix;
     public static List<HexBlockContainer> hexBlockContainerList = new();
     public static readonly List<EColor> EColorList = new List<EColor>() { EColor.blue, EColor.red, EColor.yellow };
-    public readonly static (int x, int y)[] dirList = new (int x, int y)[6] { (2, 0), (-2, 0), (1, 1), (-1, -1), (1, -1), (-1, 1) };
+    public readonly static (int x, int y)[] dirList = new (int x, int y)[6] { (2, 0), (-2, 0), (1, 1), (-1, -1), (1, -1), (-1, 1) };//기준점과 바로 인접한 블럭
+    public readonly static (int x, int y)[] dirList_Range2 = new (int x, int y)[12] { (-4,0),(-3,-1), (-2,-2),(0,-2),(2,-2),(3,-1),(4,0),(3,1),(2,2),(0,2),(-2,2),(-3,1)};//기준점에서 한칸 건너띄어 인접한 블럭
     public HexBlock hexBlock;
     [SerializeField] Image _hintEffectImage;
     [SerializeField] DOTweenAnimation _hintEffectAnim;
@@ -72,66 +73,35 @@ public class HexBlockContainer : MonoBehaviour
             });
         }
     }
-   
-    public List<HexBlockContainer> GetNeighborContainerBlockList()
+    public List<HexBlockContainer> GetNeighborContainerBlockList(int neighborRange = 1)
     {
         var neighborList = new List<HexBlockContainer>();
-        foreach (var dir in dirList)
+        for (int i = 1; i <= neighborRange; i++)
         {
-            int neighborIndexX = x + dir.x;
-            int neighborIndexY = y + dir.y;
-            int matrixWidth = hexBlockContainerMatrix.GetLength(0);
-            int matrixHeight = hexBlockContainerMatrix.GetLength(1);
-
-            HexBlockContainer neighborHexBlockContainer = null;
-
-            // 인덱스가 유효한지 검사
-            if (neighborIndexX >= 0 && neighborIndexX < matrixWidth && neighborIndexY >= 0 && neighborIndexY < matrixHeight)
+            var targetDir = i == 1? dirList : dirList_Range2;
+            foreach (var dir in targetDir)
             {
-                neighborHexBlockContainer = hexBlockContainerMatrix[neighborIndexX, neighborIndexY];
-            }
+                int neighborIndexX = x + dir.x ;
+                int neighborIndexY = y + dir.y ;
+                int matrixWidth = hexBlockContainerMatrix.GetLength(0);
+                int matrixHeight = hexBlockContainerMatrix.GetLength(1);
 
-            if (ReferenceEquals(neighborHexBlockContainer, null))
-            {
-                continue;
+                HexBlockContainer neighborHexBlockContainer = null;
+
+                // 인덱스가 유효한지 검사
+                if (neighborIndexX >= 0 && neighborIndexX < matrixWidth && neighborIndexY >= 0 && neighborIndexY < matrixHeight)
+                {
+                    neighborHexBlockContainer = hexBlockContainerMatrix[neighborIndexX, neighborIndexY];
+                }
+
+                if (ReferenceEquals(neighborHexBlockContainer, null))
+                {
+                    continue;
+                }
+                neighborList.Add(neighborHexBlockContainer);
             }
-            neighborList.Add(neighborHexBlockContainer);
         }
         return neighborList;
-    }
-    public static List<HexBlockContainer> GetBombAreaContainerList(HexBlockContainer hexBlockContainer, bool isLargeArea)
-    {
-        var TNTAreaList = new List<HexBlockContainer>();
-        var tntDirList = new List<(int x, int y)>() { (0, 2), (0, -2), (1, 1), (-1, -1), (1, -1), (-1, 1) , (2,-2),(2,0),(2,2) , (-2, -2), (-2, 0), (-2, 2) };
-        var tntLargeDirList = new List<(int x, int y)>() { (-2, -4), (-1, -3), (0, -4), (1, -3), (2, -4), (2, 4), (1, 3), (0, 4), (-1, 3), (-2, 4) };
-
-        var dirList = tntDirList;
-        if(isLargeArea)
-        {
-            dirList.AddRange(tntLargeDirList);
-        }
-        foreach (var dir in dirList)
-        {
-            int neighborIndexX = hexBlockContainer.x + dir.x;
-            int neighborIndexY = hexBlockContainer.y + dir.y;
-            int matrixWidth = hexBlockContainerMatrix.GetLength(0);
-            int matrixHeight = hexBlockContainerMatrix.GetLength(1);
-
-            HexBlockContainer neighborHexBlockContainer = null;
-
-            // 인덱스가 유효한지 검사
-            if (neighborIndexX >= 0 && neighborIndexX < matrixWidth && neighborIndexY >= 0 && neighborIndexY < matrixHeight)
-            {
-                neighborHexBlockContainer = hexBlockContainerMatrix[neighborIndexX, neighborIndexY];
-            }
-
-            if (ReferenceEquals(neighborHexBlockContainer, null))
-            {
-                continue;
-            }
-            TNTAreaList.Add(neighborHexBlockContainer);
-        }
-        return TNTAreaList;
     }
 #if UNITY_EDITOR
     private void OnValidate()
