@@ -69,6 +69,14 @@
         "StringArray": []
       },
       {
+        "key": "neroBallDirectDamage",
+        "IntValue": null,
+        "FloatValue": "150",
+        "IntArray": [],
+        "FloatArray": [],
+        "StringArray": []
+      },
+      {
         "key": "newBlockMoveSpeed",
         "IntValue": null,
         "FloatValue": "1000",
@@ -104,6 +112,46 @@
         "key": "smallBombSpawnChance",
         "IntValue": null,
         "FloatValue": "10",
+        "IntArray": [],
+        "FloatArray": [],
+        "StringArray": []
+      },
+      {
+        "key": "bossAttackCooldown1",
+        "IntValue": null,
+        "FloatValue": "5",
+        "IntArray": [],
+        "FloatArray": [],
+        "StringArray": []
+      },
+      {
+        "key": "bossAttackCooldown2",
+        "IntValue": null,
+        "FloatValue": "4",
+        "IntArray": [],
+        "FloatArray": [],
+        "StringArray": []
+      },
+      {
+        "key": "bossAttackCooldown3",
+        "IntValue": null,
+        "FloatValue": "3",
+        "IntArray": [],
+        "FloatArray": [],
+        "StringArray": []
+      },
+      {
+        "key": "bossAttackCooldown5",
+        "IntValue": null,
+        "FloatValue": "2",
+        "IntArray": [],
+        "FloatArray": [],
+        "StringArray": []
+      },
+      {
+        "key": "bossAttack",
+        "IntValue": null,
+        "FloatValue": "50",
         "IntArray": [],
         "FloatArray": [],
         "StringArray": []

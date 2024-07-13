@@ -272,7 +272,7 @@ public class TMPLinkDetector : MonoBehaviour
         if (KMP.KMPSearch(linkID, StatusDictionary.linkKey).Count > 0)
         {
             // "valueDesc"에 해당하는 로직 처리
-            title = "상세 정보";
+            title = ELanguageTable.DetailInformation.LocalIzeText();
             var index = int.Parse(linkID.Replace(StatusDictionary.linkKey, ""));
             descText = StatusDictionary.statusDictionaryDict[index].TmpLinkDesc; // 이곳에서 tmpLinkDesc를 사용
         }

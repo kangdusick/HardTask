@@ -12,6 +12,7 @@ public class Player : CharacterBase
     public StatusDictionary fairySpawnChanceDict = new();
     public StatusDictionary fairyDamageDict = new();
     public StatusDictionary directAttackDamageDict = new(); //보스에게 직접 구슬 발사 시 입히는 데미지
+    public StatusDictionary neroDirectAttackDamageDict = new(); //보스에게 직접 네로구슬 발사 시 입히는 데미지
     public StatusDictionary stunDurationDict = new();
     public StatusDictionary requireBallForNeroOrbDict = new(); //네로 오브를 얻기 위해 필요한 구슬 파괴 개수
     public StatusDictionary smallBombSpawnChanceDict = new();
@@ -30,7 +31,7 @@ public class Player : CharacterBase
         directAttackDamageDict[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.playerDirectDamage].FloatValue;
         requireBallForNeroOrbDict[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.requireBallForNeroOrb].FloatValue;
         smallBombSpawnChanceDict[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.smallBombSpawnChance].FloatValue;
-
+        neroDirectAttackDamageDict[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.neroBallDirectDamage].FloatValue;
     }
     
    

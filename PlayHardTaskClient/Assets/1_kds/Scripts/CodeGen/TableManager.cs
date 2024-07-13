@@ -167,6 +167,8 @@ public enum EConfigTable
 	bossDefaultDamage = -1981101256,
 	[Description("playerDirectDamage")]
 	playerDirectDamage = 285616552,
+	[Description("neroBallDirectDamage")]
+	neroBallDirectDamage = 1425844250,
 	[Description("newBlockMoveSpeed")]
 	newBlockMoveSpeed = -699488266,
 	[Description("stunDuration")]
@@ -177,6 +179,16 @@ public enum EConfigTable
 	requireBallForNeroOrb = 992950537,
 	[Description("smallBombSpawnChance")]
 	smallBombSpawnChance = 1610106077,
+	[Description("bossAttackCooldown1")]
+	bossAttackCooldown1 = -1735709892,
+	[Description("bossAttackCooldown2")]
+	bossAttackCooldown2 = -1735709889,
+	[Description("bossAttackCooldown3")]
+	bossAttackCooldown3 = -1735709890,
+	[Description("bossAttackCooldown5")]
+	bossAttackCooldown5 = -1735709896,
+	[Description("bossAttack")]
+	bossAttack = 1548315468,
 	
 }
 

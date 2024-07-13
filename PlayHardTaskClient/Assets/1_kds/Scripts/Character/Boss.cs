@@ -2,23 +2,45 @@ using Spine;
 using Spine.Unity;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class Boss : CharacterBase
 {
     public static Boss Instance;
     public StatusDictionary requireBallCntForStunDict = new();
+    public StatusDictionary attackCooldown = new();
 
     private bool _isCanAttack;
     public bool IsCanAttack => !ReferenceEquals(Instance,null) && _isCanAttack;
     [SerializeField] BlockSpawnLine _leftSpawnLine;
+    
     [SerializeField] BlockSpawnLine _rightSpawnLine;
     [SerializeField] SkeletonGraphic _skeletonGraphic;
+
+    [SerializeField] TMP_Text _attackCooldownText;
+    [SerializeField] TMP_Text _stunText;
+
     private TrackEntry _spineCharacterTrackEntry;
 
     private int Stun;
     private int _rmainBallCountForStun;
     private int RmainBallCountForStun;
+    private int _remainAttackCooldown;
+    private int RemainAttackCooldown
+    {
+        get { return _remainAttackCooldown; }
+        set 
+        {
+            _remainAttackCooldown = value;
+            if(_remainAttackCooldown <=0)
+            {
+                DoAttack();
+                _remainAttackCooldown = Mathf.RoundToInt(attackCooldown.FinalValue);
+            }
+            _attackCooldownText.text = $"{ELanguageTable.attack}:{_remainAttackCooldown}";
+        }
+    }
 
     enum EBossPhase
     {
@@ -34,7 +56,29 @@ public class Boss : CharacterBase
         get { return _phase; }
         set 
         { 
-            _phase = value; 
+            _phase = value;
+            switch (_phase)
+            {
+                case EBossPhase.Default:
+                    attackCooldown[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.bossAttackCooldown1].FloatValue;
+                    RemainAttackCooldown = Mathf.RoundToInt(attackCooldown.FinalValue);
+                    break;
+                case EBossPhase.LeftWing:
+                    SetSkin("LeftWing");
+                    SetAnim(EReaperAnim.LeftWingGrow);
+                    attackCooldown[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.bossAttackCooldown2].FloatValue;
+                    break;
+                case EBossPhase.DoubleWing:
+                    SetSkin("DoubleWing");
+                    SetAnim(EReaperAnim.RightWingGrow);
+                    attackCooldown[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.bossAttackCooldown3].FloatValue;
+                    break;
+                case EBossPhase.Hide:
+                    break;
+                case EBossPhase.Final:
+                    attackCooldown[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.bossAttackCooldown5].FloatValue;
+                    break;
+            }
         }
     }
     private enum EReaperAnim
@@ -68,20 +112,28 @@ public class Boss : CharacterBase
         _skeletonGraphic.AnimationState.Complete += OnAnimationComplete;
         _currentIdleAnim = EReaperAnim.Idle;
         SetAnim(_currentIdleAnim);
+        HexBlock.OnBlockDamaged -= OnBlockDamaged;
+        HexBlock.OnBlockDamaged += OnBlockDamaged;
+        Player.Instance.OnPlayerTurnEnd -= OnPlayerTurnEnd;
+        Player.Instance.OnPlayerTurnEnd += OnPlayerTurnEnd;
+    }
+    private void OnBlockDamaged()
+    {
+        RmainBallCountForStun--;
+    }
+    private void OnPlayerTurnEnd()
+    {
+        RemainAttackCooldown--;
     }
     private void PhaseChange()
     {
         if(CurrentHpRate<=0.75f && Phase == EBossPhase.Default)
         {
             Phase = EBossPhase.LeftWing;
-            SetSkin("LeftWing");
-            SetAnim(EReaperAnim.LeftWingGrow);
         }
         if (CurrentHpRate <= 0.5f && Phase == EBossPhase.LeftWing)
         {
             Phase = EBossPhase.DoubleWing;
-            SetSkin("DoubleWing");
-            SetAnim(EReaperAnim.RightWingGrow);
         }
         if (CurrentHpRate <= 0.25f && Phase == EBossPhase.DoubleWing)
         {
@@ -110,6 +162,10 @@ public class Boss : CharacterBase
                 _rightSpawnLine.PushAndSpawnBlocksInLine();
                 break;
         }
+    }
+    private void DoAttack()
+    {
+
     }
     private void SetAnim(EReaperAnim eReaperAnim)
     {

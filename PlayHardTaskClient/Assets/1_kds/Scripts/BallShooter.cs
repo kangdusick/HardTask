@@ -259,21 +259,18 @@ public class BallShooter : MonoBehaviour
         if (!ReferenceEquals(_destineHexBlockContainer, null))
         {
             var shootingBall = _prepareBallList[0];
+            if(shootingBall.eBlockType == EBlockType.bomb_Range2_neroOrb)
+            {
+                NeroOrbContainer.Instance.EnableNeroOrbContainer(true);
+            }
             _prepareBallList.Remove(shootingBall);
             isWhileBallShooterRoutine = true;
             _shootingLineRenderer.gameObject.SetActive(false);
             var bossBlock = IsBossAttackDirectly();
             if (bossBlock)
             {
-                bool isMoveDone = false;
                 await shootingBall.SetHexBlockContainerWithMove(_destineHexBlockContainer, shootingBallSpeed, shootingBallMovingRoute);
-                shootingBall.transform.DOMove(bossBlock.transform.position, 0.2f).OnComplete(() =>
-                {
-                    Boss.Instance.OnDamaged(Player.Instance.directAttackDamageDict.FinalValue);
-                    shootingBall.Damaged();
-                    isMoveDone = true;
-                });
-                await UniTask.WaitWhile(() => !isMoveDone);
+                await shootingBall.DirectDamageToBoss(bossBlock);
             }
             else
             {

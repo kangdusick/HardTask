@@ -17,6 +17,7 @@ public class TransitionManager : MonoBehaviour
         BasePopup.popupList.Clear();
         BasePopup.currentSortingOrder = 0;
         TMPLinkDetector.popLinkInfoSet.Clear();
+        HexBlock.OnBlockDamaged = null;
         Time.timeScale = 1f;
     }
     private void OnSceneLoaded(Scene scene,LoadSceneMode loadSceneMode)

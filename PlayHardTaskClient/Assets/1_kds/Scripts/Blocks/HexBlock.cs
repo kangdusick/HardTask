@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -35,6 +36,7 @@ public class HexBlock : MonoBehaviour
     private Fairy _attatchedFairy;
     public bool isAttatcfairy = false;
     public bool IsCantDestroyAndMove => (eBlockType == EBlockType.attatchPoint || eBlockType == EBlockType.attatchPoint_Spawn || eBlockType == EBlockType.boss);
+    public static Action OnBlockDamaged;
     private void Awake()
     {
         if(!ReferenceEquals(BlockEditor.Instance,null))
@@ -187,8 +189,27 @@ public class HexBlock : MonoBehaviour
                 break;
 
         }
-        NeroOrbContainer.Instance.RemainNeroOrbCount--;
+        OnBlockDamaged?.Invoke();
         Destroy();
+    }
+    public async UniTask DirectDamageToBoss(HexBlock bossBlock)
+    {
+        bool isMoveDone = false;
+        transform.DOMove(bossBlock.transform.position, 0.2f).OnComplete(() =>
+        {
+            switch (eBlockType)
+            {
+                case EBlockType.bomb_Range2_neroOrb:
+                    Boss.Instance.OnDamaged(Player.Instance.neroDirectAttackDamageDict.FinalValue);
+                    break;
+                default:
+                    Boss.Instance.OnDamaged(Player.Instance.directAttackDamageDict.FinalValue);
+                    break;
+            }
+            Damaged();
+            isMoveDone = true;
+        });
+        await UniTask.WaitWhile(() => !isMoveDone);
     }
     public async UniTask RotateAroundCircle(float startAngle, float endAngle, float time = 0.4f)
     {
