@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour
     public static bool isInGame => SceneManager.GetActiveScene().name == "Game";
     public static GameManager Instance;
     public bool IsCanMouseClick => !BallShooter.Instance.isWhileBallShooterRoutine && !BlockSpawnLine.IsWhileBallSpawning;
+    public Canvas worldCanvas;
 
     private void Awake()
     {
@@ -24,6 +25,7 @@ public class GameManager : MonoBehaviour
         float targetHeight = 1920f;
         float targetRate = targetWidth / targetHeight;
         Camera.main.orthographicSize = 820f * targetRate / screenRate;
+        worldCanvas = GameObject.FindGameObjectWithTag(ETag.WorldCanvas.ToString()).GetComponent<Canvas>();
         PoolableManager.Instance.Instantiate<PopCommon>(EPrefab.PopCommon).OpenPopup(ELanguageTable.changePoint_Title.LocalIzeText(),ELanguageTable.changePoint_Desc.LocalIzeText());
     }
 }

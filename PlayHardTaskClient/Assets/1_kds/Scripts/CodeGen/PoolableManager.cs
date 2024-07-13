@@ -25,6 +25,8 @@ public enum EPrefab
 	NeroOrb = -889424,
 	[Description("SmallBomb")]
 	SmallBomb = 658824888,
+	[Description("BossSlash")]
+	BossSlash = 1016135199,
 	[Description("HexBlock")]
 	HexBlock = 1671295265,
 	

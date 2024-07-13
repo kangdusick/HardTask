@@ -1,3 +1,4 @@
+using DG.Tweening;
 using Spine;
 using Spine.Unity;
 using System.Collections;
@@ -12,9 +13,12 @@ public class Boss : CharacterBase
     public StatusDictionary attackCooldown = new();
 
     private bool _isCanAttack;
-    public bool IsCanAttack => !ReferenceEquals(Instance,null) && _isCanAttack;
+    public bool IsCanAttack => !ReferenceEquals(Instance, null) && _isCanAttack;
+
+    [SerializeField] RectTransform _weaponEdgeRect;
+
     [SerializeField] BlockSpawnLine _leftSpawnLine;
-    
+
     [SerializeField] BlockSpawnLine _rightSpawnLine;
     [SerializeField] SkeletonGraphic _skeletonGraphic;
 
@@ -30,10 +34,14 @@ public class Boss : CharacterBase
     private int RemainAttackCooldown
     {
         get { return _remainAttackCooldown; }
-        set 
+        set
         {
+            if (Stun > 0)
+            {
+                return;
+            }
             _remainAttackCooldown = value;
-            if(_remainAttackCooldown <=0)
+            if (_remainAttackCooldown <= 0)
             {
                 DoAttack();
                 _remainAttackCooldown = Mathf.RoundToInt(attackCooldown.FinalValue);
@@ -54,8 +62,8 @@ public class Boss : CharacterBase
     private EBossPhase Phase
     {
         get { return _phase; }
-        set 
-        { 
+        set
+        {
             _phase = value;
             switch (_phase)
             {
@@ -98,6 +106,7 @@ public class Boss : CharacterBase
         Phase = EBossPhase.Default;
         _isCanAttack = true;
         hpDict[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.bossDefaultHp].FloatValue;
+        attackDict[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.bossAttack].FloatValue;
         Player.Instance.OnPlayerTurnEnd -= BallSpawnRoutine;
         Player.Instance.OnPlayerTurnEnd += BallSpawnRoutine;
         OnCurrentHpChange -= PhaseChange;
@@ -127,7 +136,7 @@ public class Boss : CharacterBase
     }
     private void PhaseChange()
     {
-        if(CurrentHpRate<=0.75f && Phase == EBossPhase.Default)
+        if (CurrentHpRate <= 0.75f && Phase == EBossPhase.Default)
         {
             Phase = EBossPhase.LeftWing;
         }
@@ -165,7 +174,7 @@ public class Boss : CharacterBase
     }
     private void DoAttack()
     {
-
+        SetAnim(EReaperAnim.Attack);
     }
     private void SetAnim(EReaperAnim eReaperAnim)
     {
@@ -196,6 +205,13 @@ public class Boss : CharacterBase
         switch (e.Data.Name)
         {
             case "Attack":
+                var slash = PoolableManager.Instance.Instantiate(EPrefab.BossSlash, _weaponEdgeRect.transform.position, parentTransform: GameManager.Instance.worldCanvas.transform);
+                slash.transform.SetAsLastSibling();
+                slash.transform.DOMove(Player.Instance.transform.position, 0.5f).OnComplete(() =>
+                {
+                    Player.Instance.OnDamaged(attackDict.FinalValue);
+                    PoolableManager.Instance.Destroy(slash);
+                });
                 break;
         }
     }
