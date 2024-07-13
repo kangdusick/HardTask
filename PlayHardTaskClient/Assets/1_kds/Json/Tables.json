@@ -87,6 +87,14 @@
       {
         "key": "requireBallCntForStun",
         "IntValue": null,
+        "FloatValue": "50",
+        "IntArray": [],
+        "FloatArray": [],
+        "StringArray": []
+      },
+      {
+        "key": "requireBallForNeroOrb",
+        "IntValue": null,
         "FloatValue": "30",
         "IntArray": [],
         "FloatArray": [],

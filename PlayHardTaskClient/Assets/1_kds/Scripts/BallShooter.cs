@@ -89,46 +89,81 @@ public class BallShooter : MonoBehaviour
     private HexBlockContainer _destineHexBlockContainer = null;
     private List<Vector3> shootingBallMovingRoute = new();
     private const float shootingBallSpeed = 1200f;
-    public bool isWhileShooting;
-    [SerializeField] HexBlock readyBall;
+    public bool isWhileBallShooterRoutine;
     List<HexBlock> _prepareBallList = new();
-    public Action OnPlayerTurnEnd;
+    static readonly float[] angleList = { 90f, -30f, -150f, -270f };
     private void Awake()
     {
         Instance = this;
-        isWhileShooting = false;
+        isWhileBallShooterRoutine = false;
         _shootingLineRenderer.gameObject.SetActive(false);
         TouchManager.Instance.OnTouchIng += SetDestineHexBlockContainer;
         TouchManager.Instance.OnTouchUp += ShootingBall;
         PrefareBall();
+    }
+    public async void FillNeroOrbDirectly()
+    {
+        isWhileBallShooterRoutine = true;
+        var secrifiedBall = _prepareBallList[0];
+        secrifiedBall.transform.DOMove(NeroOrbContainer.Instance.transform.position,0.25f);
+        await UniTask.Delay(250);
+        _prepareBallList.Remove(secrifiedBall);
+        PoolableManager.Instance.Destroy(secrifiedBall.gameObject);
+        NeroOrbContainer.Instance.RemainNeroOrbCount -= 10;
+        isWhileBallShooterRoutine = false;
         PrefareBall();
+        Player.Instance.TurnEnd();
     }
-    private void PrefareBall()
+    public void PrefareBall(bool isNeroOrb = false)
     {
-        readyBall = PoolableManager.Instance.Instantiate<HexBlock>(EPrefab.HexBlock, _shootingStartPoint.position);
-        readyBall.Init(HexBlockContainer.EColorList.Random(), EBlockType.normal);
-        readyBall.transform.localScale = Vector3.zero;
-        readyBall.transform.DOScale(Vector3.one, 0.5f).SetEase(Ease.OutBack);
-        _prepareBallList.Add(readyBall);
-    }
-    [Button]
-    private void RotateBall()
-    {
-        float[] angleList = { 90f, -30f, -150f, -270f };
-        //반지름: 75, 0번인덱스 위치: 90도, 1번인덱스 위치: 330도, 2번인덱스위치: 210도
-        //공이 2개 있는 경우
-        //볼 회전 0번인덱스 공은 1번인덱스 위치로, 1번인덱스 공은 0번위치로,
-        for(int i = 0; i<_prepareBallList.Count;i++)
+        while (_prepareBallList.Count<2)
         {
-            if( i == _prepareBallList.Count-1)
+            HexBlock newBall = null;
+            if (isNeroOrb)
             {
-                _prepareBallList[i].RotateAroundCircle(angleList[i], angleList[3]);
+                newBall = PoolableManager.Instance.Instantiate<HexBlock>(EPrefab.NeroOrb, _shootingStartPoint.position);
+                newBall.Init(EColor.none, EBlockType.neroOrb);
             }
             else
             {
-                _prepareBallList[i].RotateAroundCircle(angleList[i], angleList[i+1]);
-
+                newBall = PoolableManager.Instance.Instantiate<HexBlock>(EPrefab.HexBlock, _shootingStartPoint.position);
+                newBall.Init(HexBlockContainer.EColorList.Random(), EBlockType.normal);
             }
+            newBall.transform.localScale = Vector3.zero;
+            newBall.transform.DOScale(Vector3.one, 0.5f).SetEase(Ease.OutBack);
+            _prepareBallList.Insert(0, newBall);
+            RotateBall();
+        }
+    }
+    public void RotateBall()
+    {
+        // 새로운 리스트 생성하여 회전된 공들의 순서를 저장
+        List<HexBlock> rotatedList = new List<HexBlock>(_prepareBallList.Count);
+
+        // 새로운 리스트에 회전된 순서로 공들을 추가
+        for (int i = 0; i < _prepareBallList.Count; i++)
+        {
+            rotatedList.Add(null);
+        }
+
+        for (int i = 0; i < _prepareBallList.Count; i++)
+        {
+            if (i == _prepareBallList.Count - 1)
+            {
+                _prepareBallList[i].RotateAroundCircle(angleList[i], angleList[3]);
+                rotatedList[0] = _prepareBallList[i];
+            }
+            else
+            {
+                _prepareBallList[i].RotateAroundCircle(angleList[i], angleList[i + 1]);
+                rotatedList[i + 1] = _prepareBallList[i];
+            }
+        }
+
+        // 새로운 순서로 원래 리스트를 업데이트
+        for (int i = 0; i < _prepareBallList.Count; i++)
+        {
+            _prepareBallList[i] = rotatedList[i];
         }
     }
     void SetDestineHexBlockContainer(Vector2 screenPos) //마우스 클릭 중에 조준선이 활성화되며 구슬이 어디에 도착할지 표시해준다.
@@ -205,35 +240,32 @@ public class BallShooter : MonoBehaviour
         }
         if (!ReferenceEquals(_destineHexBlockContainer, null))
         {
-            bool isMakeNewBall = readyBall.eBlockType == EBlockType.normal;
-            _prepareBallList.Remove(readyBall);
-            isWhileShooting = true;
+            var shootingBall = _prepareBallList[0];
+            _prepareBallList.Remove(shootingBall);
+            isWhileBallShooterRoutine = true;
             _shootingLineRenderer.gameObject.SetActive(false);
             var bossBlock = IsBossAttackDirectly();
             if (bossBlock)
             {
                 bool isMoveDone = false;
-                await readyBall.SetHexBlockContainerWithMove(_destineHexBlockContainer, shootingBallSpeed, shootingBallMovingRoute);
-                readyBall.transform.DOMove(bossBlock.transform.position, 0.2f).OnComplete(() =>
+                await shootingBall.SetHexBlockContainerWithMove(_destineHexBlockContainer, shootingBallSpeed, shootingBallMovingRoute);
+                shootingBall.transform.DOMove(bossBlock.transform.position, 0.2f).OnComplete(() =>
                 {
                     Boss.Instance.OnDamaged(Player.Instance.directAttackDamageDict.FinalValue);
-                    readyBall.Damaged();
+                    shootingBall.Damaged();
                     isMoveDone = true;
                 });
                 await UniTask.WaitWhile(() => !isMoveDone);
             }
             else
             {
-                await readyBall.SetHexBlockContainerWithMove(_destineHexBlockContainer, shootingBallSpeed, shootingBallMovingRoute);
+                await shootingBall.SetHexBlockContainerWithMove(_destineHexBlockContainer, shootingBallSpeed, shootingBallMovingRoute);
                 EnableDestinePositionHint(false);
-                await FindMatchAndDestroyBalls(readyBall);
+                await FindMatchAndDestroyBalls(shootingBall);
             }
-            if (isMakeNewBall)
-            {
-                PrefareBall();
-            }
-            OnPlayerTurnEnd?.Invoke();
-            isWhileShooting = false;
+            PrefareBall();
+            isWhileBallShooterRoutine = false;
+            Player.Instance.TurnEnd();
         }
     }
     private HexBlock IsBossAttackDirectly()

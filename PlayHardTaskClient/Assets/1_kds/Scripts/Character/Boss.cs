@@ -54,8 +54,8 @@ public class Boss : CharacterBase
         Phase = EBossPhase.Default;
         _isCanAttack = true;
         hpDict[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.bossDefaultHp].FloatValue;
-        BallShooter.Instance.OnPlayerTurnEnd -= BallSpawnRoutine;
-        BallShooter.Instance.OnPlayerTurnEnd += BallSpawnRoutine;
+        Player.Instance.OnPlayerTurnEnd -= BallSpawnRoutine;
+        Player.Instance.OnPlayerTurnEnd += BallSpawnRoutine;
         OnCurrentHpChange -= PhaseChange;
         OnCurrentHpChange += PhaseChange;
 

@@ -21,6 +21,8 @@ public enum EPrefab
 	Fairy = 145775554,
 	[Description("DamageText")]
 	DamageText = 92199005,
+	[Description("NeroOrb")]
+	NeroOrb = -889424,
 	[Description("HexBlock")]
 	HexBlock = 1671295265,
 	

@@ -11,7 +11,7 @@ public class GameManager : MonoBehaviour
 {
     public static bool isInGame => SceneManager.GetActiveScene().name == "Game";
     public static GameManager Instance;
-    public bool IsCanMouseClick => !BallShooter.Instance.isWhileShooting && !BlockSpawnLine.IsWhileBallSpawning;
+    public bool IsCanMouseClick => !BallShooter.Instance.isWhileBallShooterRoutine && !BlockSpawnLine.IsWhileBallSpawning;
 
     private void Awake()
     {

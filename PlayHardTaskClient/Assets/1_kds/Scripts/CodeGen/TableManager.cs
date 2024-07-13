@@ -173,6 +173,8 @@ public enum EConfigTable
 	stunDuration = -1760957569,
 	[Description("requireBallCntForStun")]
 	requireBallCntForStun = -229332663,
+	[Description("requireBallForNeroOrb")]
+	requireBallForNeroOrb = 992950537,
 	
 }
 

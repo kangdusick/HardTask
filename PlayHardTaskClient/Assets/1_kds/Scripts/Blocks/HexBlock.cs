@@ -16,7 +16,7 @@ public enum EBlockType
 {
     Empty = 0,
     normal = 100,
-    item_bomb = 400,
+    neroOrb = 400,
     attatchPoint = 500,
     attatchPoint_Spawn = 600,
     boss = 700
@@ -29,7 +29,6 @@ public class HexBlock : MonoBehaviour
     public bool isItemEffectDone;
     private bool _isDamaged;
     [SerializeField] private Image blockImage;
-    public Canvas canvas;
     public EColor eColor;
     public EBlockType eBlockType;
     private Fairy _attatchedFairy;
@@ -110,7 +109,7 @@ public class HexBlock : MonoBehaviour
     private void UpdateBlockImage()
     {
         var spriteName = $"{(eColor == EColor.none ? string.Empty : eColor.ToString() + "_")}{(eBlockType == EBlockType.Empty ? string.Empty : eBlockType.ToString())}";
-        if(eBlockType == EBlockType.attatchPoint || eBlockType == EBlockType.boss)
+        if(eBlockType == EBlockType.attatchPoint || eBlockType == EBlockType.boss || eBlockType == EBlockType.neroOrb)
         {
             spriteName = ESprite.empty.ToString();
         }
@@ -150,7 +149,7 @@ public class HexBlock : MonoBehaviour
         UseFairy();
         switch (eBlockType)
         {
-            case EBlockType.item_bomb:
+            case EBlockType.neroOrb:
                 break;
             case EBlockType.normal:
                 Color particleColor = Color.blue;
@@ -169,7 +168,8 @@ public class HexBlock : MonoBehaviour
                 PoolableManager.Instance.Instantiate<AutoEnableParticleAndDistroyAfterEffectEnd>(EPrefab.NormalDestroyParticleEffect, transform.position, Vector3.one).Init(particleColor);
                 break;
 
-        } 
+        }
+        NeroOrbContainer.Instance.RemainNeroOrbCount--;
         Destroy();
     }
     public async UniTask RotateAroundCircle(float startAngle, float endAngle, float time = 0.4f)
