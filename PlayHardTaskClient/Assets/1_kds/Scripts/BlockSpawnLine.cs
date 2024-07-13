@@ -21,6 +21,9 @@ public class BlockSpawnLine : MonoBehaviour
         _newBlockMoveSpeed = TableManager.ConfigTableDict[EConfigTable.newBlockMoveSpeed].FloatValue;
         _spawnPointHexBlockContainer = GetComponent<HexBlockContainer>();
         _isWhileSpawningCnt = 0;
+    }
+    private void Start()
+    {
         SetSpawnLineIndexList();
     }
     private void SetSpawnLineIndexList()

@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using Spine;
 using Spine.Unity;
@@ -14,7 +15,7 @@ public class Boss : CharacterBase
 
     private bool _isCanAttack;
     public bool IsCanAttack => !ReferenceEquals(Instance, null) && _isCanAttack;
-
+    public bool isBossTurn;
     [SerializeField] RectTransform _weaponEdgeRect;
 
     [SerializeField] BlockSpawnLine _leftSpawnLine;
@@ -26,6 +27,7 @@ public class Boss : CharacterBase
     [SerializeField] TMP_Text _stunText;
 
     private TrackEntry _spineCharacterTrackEntry;
+    private bool isWhileSpawnBall;
 
     private int _stun;
     private int Stun
@@ -116,6 +118,8 @@ public class Boss : CharacterBase
                     attackCooldownDict[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.bossAttackCooldown3].FloatValue;
                     break;
                 case EBossPhase.Hide:
+                    HidePhase();
+                    
                     break;
                 case EBossPhase.Final:
                     attackCooldownDict[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.bossAttackCooldown5].FloatValue;
@@ -158,23 +162,38 @@ public class Boss : CharacterBase
         SetAnim(_currentIdleAnim);
         HexBlock.OnBlockDamaged -= OnBlockDamaged;
         HexBlock.OnBlockDamaged += OnBlockDamaged;
-        Player.Instance.OnPlayerTurnEnd -= OnPlayerTurnEnd;
-        Player.Instance.OnPlayerTurnEnd += OnPlayerTurnEnd;
+       
 
         RmainBallCountForStun = requireBallCntForStunDict.FinalValue_RoundToInt;
+    }
+    private void Start()
+    {
+        Player.Instance.OnPlayerTurnEnd -= OnPlayerTurnEnd;
+        Player.Instance.OnPlayerTurnEnd += OnPlayerTurnEnd;
+        isBossTurn = false;
     }
     private void OnBlockDamaged()
     {
         RmainBallCountForStun--;
     }
-    private void OnPlayerTurnEnd()
+    private async void OnPlayerTurnEnd()
     {
-        if(_currentIdleAnim == EReaperAnim.Stun)
+        isBossTurn = true;
+        if (_phase != EBossPhase.Hide)
         {
-            Stun--;
+            if (_currentIdleAnim == EReaperAnim.Stun)
+            {
+                Stun--;
+            }
+            RemainAttackCooldown--;
+            await BallSpawnRoutine();
         }
-        RemainAttackCooldown--;
-        BallSpawnRoutine();
+        else
+        {
+            CurrentHp += hpDict.FinalValue * 0.05f;
+        }
+        await UniTask.Delay(1000);
+        isBossTurn= false;
     }
     private void PhaseChange()
     {
@@ -197,8 +216,18 @@ public class Boss : CharacterBase
         _skeletonGraphic.Skeleton.SetSlotsToSetupPose();
         _skeletonGraphic.AnimationState.Apply(_skeletonGraphic.Skeleton);
     }
-    private void BallSpawnRoutine()
+    private async void HidePhase()
     {
+        await UniTask.WaitWhile(() => isWhileSpawnBall);
+        transform.SetParent(GameManager.Instance.worldCanvas.transform);
+        gameObject.SetActive(false);
+        Destroy(BlockEditor.Instance.gameObject);
+        PoolableManager.Instance.Instantiate<BlockEditor>(EPrefab.BossPhase4, parentTransform: GameManager.Instance.worldCanvas.transform);
+    }
+    private async UniTask BallSpawnRoutine()
+    {
+        isWhileSpawnBall = true;
+        List<UniTask> tasks = new List<UniTask>();  
         if (Stun > 0)
         {
             return;
@@ -206,17 +235,19 @@ public class Boss : CharacterBase
         switch (Phase)
         {
             case EBossPhase.LeftWing:
-                _leftSpawnLine.PushAndSpawnBlocksInLine();
+                tasks.Add(_leftSpawnLine.PushAndSpawnBlocksInLine());
                 break;
             case EBossPhase.DoubleWing:
-                _leftSpawnLine.PushAndSpawnBlocksInLine();
-                _rightSpawnLine.PushAndSpawnBlocksInLine();
+                tasks.Add(_leftSpawnLine.PushAndSpawnBlocksInLine());
+                tasks.Add(_rightSpawnLine.PushAndSpawnBlocksInLine());
                 break;
             case EBossPhase.Final:
-                _leftSpawnLine.PushAndSpawnBlocksInLine();
-                _rightSpawnLine.PushAndSpawnBlocksInLine();
+                tasks.Add(_leftSpawnLine.PushAndSpawnBlocksInLine());
+                tasks.Add(_rightSpawnLine.PushAndSpawnBlocksInLine());
                 break;
         }
+        await UniTask.WhenAll(tasks);
+        isWhileSpawnBall = false;
     }
     private void DoAttack()
     {

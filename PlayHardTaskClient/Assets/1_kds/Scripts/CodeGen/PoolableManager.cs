@@ -27,6 +27,8 @@ public enum EPrefab
 	SmallBomb = 658824888,
 	[Description("BossSlash")]
 	BossSlash = 1016135199,
+	[Description("BossPhase4")]
+	BossPhase4 = 1515919979,
 	[Description("HexBlock")]
 	HexBlock = 1671295265,
 	

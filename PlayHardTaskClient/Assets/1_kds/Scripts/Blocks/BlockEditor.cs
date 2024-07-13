@@ -13,6 +13,7 @@ public class BlockEditor : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+        transform.SetAsFirstSibling();
         HexBlockContainer.InitHexBlockContainerMatrix(width, height);
     }
 #if UNITY_EDITOR
