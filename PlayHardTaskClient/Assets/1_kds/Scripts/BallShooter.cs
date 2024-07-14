@@ -85,12 +85,11 @@ public class BallShooter : MonoBehaviour
     [SerializeField] private RectTransform _shootingStartPoint;
     [SerializeField] private RectTransform ballDestroierRect;
     [SerializeField] private LineRenderer _shootingLineRenderer;
-    private List<HexBlock> attatchmentHexBlockList = new();
     private HexBlockContainer _destineHexBlockContainer = null;
     private List<Vector3> shootingBallMovingRoute = new();
     private const float shootingBallSpeed = 1200f;
     public bool isWhileBallShooterRoutine;
-    List<HexBlock> _prepareBallList = new();
+    [HideInInspector] public List<HexBlock> prepareBallList = new();
     static readonly float[] angleList = { 90f, -30f, -150f, -270f };
     private List<HexBlockContainer> _enabledHintBlockList = new(); 
     private void Awake()
@@ -105,10 +104,10 @@ public class BallShooter : MonoBehaviour
     public async void FillNeroOrbDirectly()
     {
         isWhileBallShooterRoutine = true;
-        var secrifiedBall = _prepareBallList[0];
+        var secrifiedBall = prepareBallList[0];
         secrifiedBall.transform.DOMove(NeroOrbContainer.Instance.transform.position,0.25f);
         await UniTask.Delay(250);
-        _prepareBallList.Remove(secrifiedBall);
+        prepareBallList.Remove(secrifiedBall);
         PoolableManager.Instance.Destroy(secrifiedBall.gameObject);
         NeroOrbContainer.Instance.RemainNeroOrbCount -= 10;
         isWhileBallShooterRoutine = false;
@@ -117,7 +116,7 @@ public class BallShooter : MonoBehaviour
     }
     public void PrefareBall(bool isNeroOrb = false)
     {
-        while (_prepareBallList.Count<2)
+        while (prepareBallList.Count<2)
         {
             HexBlock newBall = null;
             if (isNeroOrb)
@@ -132,39 +131,39 @@ public class BallShooter : MonoBehaviour
             }
             newBall.transform.localScale = Vector3.zero;
             newBall.transform.DOScale(Vector3.one, 0.5f).SetEase(Ease.OutBack);
-            _prepareBallList.Insert(0, newBall);
+            prepareBallList.Insert(0, newBall);
             RotateBall();
         }
     }
     public void RotateBall()
     {
         // 새로운 리스트 생성하여 회전된 공들의 순서를 저장
-        List<HexBlock> rotatedList = new List<HexBlock>(_prepareBallList.Count);
+        List<HexBlock> rotatedList = new List<HexBlock>(prepareBallList.Count);
 
         // 새로운 리스트에 회전된 순서로 공들을 추가
-        for (int i = 0; i < _prepareBallList.Count; i++)
+        for (int i = 0; i < prepareBallList.Count; i++)
         {
             rotatedList.Add(null);
         }
 
-        for (int i = 0; i < _prepareBallList.Count; i++)
+        for (int i = 0; i < prepareBallList.Count; i++)
         {
-            if (i == _prepareBallList.Count - 1)
+            if (i == prepareBallList.Count - 1)
             {
-                _prepareBallList[i].RotateAroundCircle(angleList[i], angleList[3]);
-                rotatedList[0] = _prepareBallList[i];
+                prepareBallList[i].RotateAroundCircle(angleList[i], angleList[3]);
+                rotatedList[0] = prepareBallList[i];
             }
             else
             {
-                _prepareBallList[i].RotateAroundCircle(angleList[i], angleList[i + 1]);
-                rotatedList[i + 1] = _prepareBallList[i];
+                prepareBallList[i].RotateAroundCircle(angleList[i], angleList[i + 1]);
+                rotatedList[i + 1] = prepareBallList[i];
             }
         }
 
         // 새로운 순서로 원래 리스트를 업데이트
-        for (int i = 0; i < _prepareBallList.Count; i++)
+        for (int i = 0; i < prepareBallList.Count; i++)
         {
-            _prepareBallList[i] = rotatedList[i];
+            prepareBallList[i] = rotatedList[i];
         }
     }
     void SetDestineHexBlockContainer(Vector2 screenPos) //마우스 클릭 중에 조준선이 활성화되며 구슬이 어디에 도착할지 표시해준다.
@@ -221,7 +220,7 @@ public class BallShooter : MonoBehaviour
                 _destineHexBlockContainer.EnableHintEffect(true);
                 _enabledHintBlockList.Add(_destineHexBlockContainer);
 
-                if (_prepareBallList[0].eBlockType == EBlockType.bomb_Range2_neroOrb)
+                if (prepareBallList[0].eBlockType == EBlockType.bomb_Range2_neroOrb)
                 {
                     var neroOrbRange = _destineHexBlockContainer.GetNeighborContainerBlockList(2);
                     foreach (var item in neroOrbRange)
@@ -258,12 +257,12 @@ public class BallShooter : MonoBehaviour
         }
         if (!ReferenceEquals(_destineHexBlockContainer, null))
         {
-            var shootingBall = _prepareBallList[0];
+            var shootingBall = prepareBallList[0];
             if(shootingBall.eBlockType == EBlockType.bomb_Range2_neroOrb)
             {
                 NeroOrbContainer.Instance.EnableNeroOrbContainer(true);
             }
-            _prepareBallList.Remove(shootingBall);
+            prepareBallList.Remove(shootingBall);
             isWhileBallShooterRoutine = true;
             _shootingLineRenderer.gameObject.SetActive(false);
             var bossBlock = IsBossAttackDirectly();
@@ -320,9 +319,8 @@ public class BallShooter : MonoBehaviour
         }
         //attatch포인트와 연결되어있지 않은 그룹 모두 낙하파괴
         List<HexBlock> destroyWithFall = new();
-        FindAllAttatchmentPoint();
         UnionFind unionFindAttatchmentPoint = new UnionFind(HexBlockContainer.hexBlockContainerList.Count + 1);
-        foreach (var item in attatchmentHexBlockList)
+        foreach (var item in HexBlockContainer.attatchmentHexBlockList)
         {
             UnionAroundAttatchmentPoint(item.hexBlockContainer, unionFindAttatchmentPoint);
         }
@@ -336,20 +334,6 @@ public class BallShooter : MonoBehaviour
         }
 
         await BallDestroyer.Instance.DestroyWithBallDestroyer(destroyWithFall);
-    }
-    private void FindAllAttatchmentPoint()
-    {
-        if (attatchmentHexBlockList.Count == 0)
-        {
-            foreach (var item in HexBlockContainer.hexBlockContainerList)
-            {
-                if (!ReferenceEquals(item.hexBlock, null) &&
-                    (item.hexBlock.eBlockType == EBlockType.attatchPoint || item.hexBlock.eBlockType == EBlockType.attatchPoint_Spawn))
-                {
-                    attatchmentHexBlockList.Add(item.hexBlock);
-                }
-            }
-        }
     }
     private List<HexBlock> GetUnionedHexBlockList(HexBlock standardHexBlock, UnionFind unionFind)
     {

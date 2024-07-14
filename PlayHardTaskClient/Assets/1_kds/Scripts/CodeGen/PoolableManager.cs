@@ -29,6 +29,10 @@ public enum EPrefab
 	BossSlash = 1016135199,
 	[Description("BossPhase4")]
 	BossPhase4 = 1515919979,
+	[Description("BossPhase1_3")]
+	BossPhase1_3 = 805187232,
+	[Description("BossPhase5")]
+	BossPhase5 = 1515919978,
 	[Description("HexBlock")]
 	HexBlock = 1671295265,
 	
@@ -210,80 +214,62 @@ public class PoolableManager : MonoBehaviour
         }
     }
     
-    // 비동기식으로 게임 오브젝트를 생성하거나 가져오는 메서드
+    private GameObject GetOrCreateGameObjectCore(EPrefab ePrefab)
+    {
+        if (!_poolableParent.ContainsKey(ePrefab))
+        {
+            CreateNewPool(ePrefab);
+        }
+
+        if (_poolableObjects[ePrefab].Count > 0)
+        {
+            AddEPrefab addEprefab = null;
+            do
+            {
+                addEprefab = _poolableObjects[ePrefab].Pop();
+                if(addEprefab == null)
+                {
+                    continue;
+                }
+                if (addEprefab.isPoolable)
+                {
+                    addEprefab.isPoolable = false;
+                    addEprefab.gameObject.SetActive(true);
+
+                    if (addEprefab.destroyCoroutine != null)
+                    {
+                        StopCoroutine(addEprefab.destroyCoroutine);
+                        addEprefab.destroyCoroutine = null;
+                    }
+                    addEprefab.OnDestroy = null;
+                    return addEprefab.gameObject;
+                }
+            } while (_poolableObjects[ePrefab].Count > 0);
+        }
+
+        return null;
+    }
+
     private async UniTask<GameObject> GetOrCreateGameObjectAsync(EPrefab ePrefab)
     {
-        if (!_poolableParent.ContainsKey(ePrefab))
+        var gameObject = GetOrCreateGameObjectCore(ePrefab);
+        if (gameObject != null)
         {
-            CreateNewPool(ePrefab);
+            return gameObject;
         }
-
-        if (_poolableObjects[ePrefab].Count > 0)
-        {
-            AddEPrefab addEprefab = null;
-            do
-            {
-                addEprefab = _poolableObjects[ePrefab].Pop();
-                if (addEprefab.isPoolable)
-                {
-                    addEprefab.isPoolable = false;
-                    addEprefab.gameObject.SetActive(true);
-
-                    if (addEprefab.destroyCoroutine != null)
-                    {
-                        StopCoroutine(addEprefab.destroyCoroutine);
-                        addEprefab.destroyCoroutine = null;
-                    }
-                    addEprefab.OnDestroy = null;
-                    return addEprefab.gameObject;
-                }
-            } while (_poolableObjects[ePrefab].Count > 0);
-
-            return await CreateNewGameObjectAsync(ePrefab);
-        }
-        else
-        {
-            return await CreateNewGameObjectAsync(ePrefab);
-        }
+        return await CreateNewGameObjectAsync(ePrefab);
     }
-    
-    // 동기식으로 게임 오브젝트를 생성하거나 가져오는 메서드
+
     private GameObject GetOrCreateGameObject(EPrefab ePrefab)
     {
-        if (!_poolableParent.ContainsKey(ePrefab))
+        var gameObject = GetOrCreateGameObjectCore(ePrefab);
+        if (gameObject != null)
         {
-            CreateNewPool(ePrefab);
+            return gameObject;
         }
-
-        if (_poolableObjects[ePrefab].Count > 0)
-        {
-            AddEPrefab addEprefab = null;
-            do
-            {
-                addEprefab = _poolableObjects[ePrefab].Pop();
-                if (addEprefab.isPoolable)
-                {
-                    addEprefab.isPoolable = false;
-                    addEprefab.gameObject.SetActive(true);
-
-                    if (addEprefab.destroyCoroutine != null)
-                    {
-                        StopCoroutine(addEprefab.destroyCoroutine);
-                        addEprefab.destroyCoroutine = null;
-                    }
-                    addEprefab.OnDestroy = null;
-                    return addEprefab.gameObject;
-                }
-            } while (_poolableObjects[ePrefab].Count > 0);
-
-            return CreateNewGameObject(ePrefab);
-        }
-        else
-        {
-            return CreateNewGameObject(ePrefab);
-        }
+        return CreateNewGameObject(ePrefab);
     }
-    
+
     // 새로운 풀을 생성하는 메서드
     private void CreateNewPool(EPrefab ePrefab)
     {
@@ -294,29 +280,30 @@ public class PoolableManager : MonoBehaviour
         parent.transform.SetParent(transform);
         _poolableParent.Add(ePrefab, parent.transform);
     }
-    
-    // 비동기식으로 새로운 게임 오브젝트를 생성하는 메서드
-     private async UniTask<GameObject> CreateNewGameObjectAsync(EPrefab ePrefab)
-    {
-        var newGameObjectOperation = Addressables.InstantiateAsync(ePrefab.OriginName());
-        await UniTask.WaitUntil(() => newGameObjectOperation.IsDone);
-        var addEPrefab = newGameObjectOperation.Result.AddComponent<AddEPrefab>();
-        addEPrefab.eprefab = ePrefab;
-        addEPrefab.isPoolable = false;
-        goEprefabFinder.Add(newGameObjectOperation.Result, addEPrefab);
 
-        return newGameObjectOperation.Result;
-    }
-    
-    // 동기식으로 새로운 게임 오브젝트를 생성하는 메서드
-    private GameObject CreateNewGameObject(EPrefab ePrefab)
+    // 게임 오브젝트를 초기화하는 헬퍼 메서드
+    private void InitializeNewGameObject(GameObject newGameObject, EPrefab ePrefab)
     {
-        var newGameObject = Instantiate(_originPrefabs[ePrefab], _poolableParent[ePrefab].transform, true);
         var addEPrefab = newGameObject.AddComponent<AddEPrefab>();
         addEPrefab.eprefab = ePrefab;
         addEPrefab.isPoolable = false;
         goEprefabFinder.Add(newGameObject, addEPrefab);
+    }
 
+    // 비동기식으로 새로운 게임 오브젝트를 생성하는 메서드
+    private async UniTask<GameObject> CreateNewGameObjectAsync(EPrefab ePrefab)
+    {
+        var newGameObjectOperation = Addressables.InstantiateAsync(ePrefab.OriginName());
+        await UniTask.WaitUntil(() => newGameObjectOperation.IsDone);
+        InitializeNewGameObject(newGameObjectOperation.Result, ePrefab);
+        return newGameObjectOperation.Result;
+    }
+
+    // 동기식으로 새로운 게임 오브젝트를 생성하는 메서드
+    private GameObject CreateNewGameObject(EPrefab ePrefab)
+    {
+        var newGameObject = Instantiate(_originPrefabs[ePrefab], _poolableParent[ePrefab].transform, true);
+        InitializeNewGameObject(newGameObject, ePrefab);
         return newGameObject;
     }
     

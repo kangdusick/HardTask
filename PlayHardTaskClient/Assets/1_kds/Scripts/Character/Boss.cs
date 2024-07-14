@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using Sirenix.OdinInspector;
 using Spine;
 using Spine.Unity;
 using System.Collections;
@@ -216,22 +217,34 @@ public class Boss : CharacterBase
         _skeletonGraphic.Skeleton.SetSlotsToSetupPose();
         _skeletonGraphic.AnimationState.Apply(_skeletonGraphic.Skeleton);
     }
+    [Button]
     private async void HidePhase()
     {
         await UniTask.WaitWhile(() => isWhileSpawnBall);
         transform.SetParent(GameManager.Instance.worldCanvas.transform);
+        foreach (var item in BallShooter.Instance.prepareBallList)
+        {
+            item.transform.SetParent(GameManager.Instance.worldCanvas.transform);
+        }
         gameObject.SetActive(false);
         Destroy(BlockEditor.Instance.gameObject);
-        PoolableManager.Instance.Instantiate<BlockEditor>(EPrefab.BossPhase4, parentTransform: GameManager.Instance.worldCanvas.transform);
+        await UniTask.Yield();
+        var map = PoolableManager.Instance.Instantiate<BlockEditor>(EPrefab.BossPhase4, parentTransform: GameManager.Instance.worldCanvas.transform);
+        map.transform.SetAsFirstSibling();
+        foreach (var item in BallShooter.Instance.prepareBallList)
+        {
+            item.transform.SetParent(map.transform);
+        }
+
     }
     private async UniTask BallSpawnRoutine()
     {
-        isWhileSpawnBall = true;
-        List<UniTask> tasks = new List<UniTask>();  
         if (Stun > 0)
         {
             return;
         }
+        List<UniTask> tasks = new List<UniTask>();
+        isWhileSpawnBall = true;
         switch (Phase)
         {
             case EBossPhase.LeftWing:

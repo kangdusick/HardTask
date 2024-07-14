@@ -62,6 +62,10 @@ public class HexBlock : MonoBehaviour
                 this.eColor = EColor.none;
                 break;
         }
+        if(eBlockType == EBlockType.attatchPoint || eBlockType == EBlockType.attatchPoint_Spawn)
+        {
+            HexBlockContainer.attatchmentHexBlockList.Add(this);
+        }
         UpdateBlockImage();
     }
     public void AttatchFairy(float chance)

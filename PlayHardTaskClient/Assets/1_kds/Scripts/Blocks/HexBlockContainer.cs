@@ -14,6 +14,7 @@ public class HexBlockContainer : MonoBehaviour
 {
     public static HexBlockContainer[,] hexBlockContainerMatrix;
     public static List<HexBlockContainer> hexBlockContainerList = new();
+    public static List<HexBlock> attatchmentHexBlockList = new();
     public static readonly List<EColor> EColorList = new List<EColor>() { EColor.blue, EColor.red, EColor.yellow };
     public readonly static (int x, int y)[] dirList = new (int x, int y)[6] { (2, 0), (-2, 0), (1, 1), (-1, -1), (1, -1), (-1, 1) };//기준점과 바로 인접한 블럭
     public readonly static (int x, int y)[] dirList_Range2 = new (int x, int y)[12] { (-4,0),(-3,-1), (-2,-2),(0,-2),(2,-2),(3,-1),(4,0),(3,1),(2,2),(0,2),(-2,2),(-3,1)};//기준점에서 한칸 건너띄어 인접한 블럭
@@ -41,6 +42,7 @@ public class HexBlockContainer : MonoBehaviour
     {
         hexBlockContainerMatrix = new HexBlockContainer[width, height];
         hexBlockContainerList.Clear();
+        attatchmentHexBlockList.Clear();
         var hexBlockContainerLGoist = GameObject.FindGameObjectsWithTag(ETag.HexBlockContainer.ToString());
         foreach (var hexBlockContainerGo in hexBlockContainerLGoist)
         {
@@ -65,6 +67,7 @@ public class HexBlockContainer : MonoBehaviour
         {
             var hexBlockPresetColor = hexBlock.eColor;
             var hexBlockPresetType = hexBlock.eBlockType;
+            Debug.Log($"{x},{y}");
             Destroy(hexBlock.gameObject); //프리셋으로 저장했던거 파괴 후 오브젝트 풀링으로 재생성
             PoolableManager.Instance.InstantiateAsync<HexBlock>(EPrefab.HexBlock, transform.position).ContinueWithNullCheck(x =>
             {
