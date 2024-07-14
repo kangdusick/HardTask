@@ -339,6 +339,10 @@ public class PoolableManager : MonoBehaviour
     private IEnumerator DestroyAfterDelay(AddEPrefab addEPrefab)
     {
         yield return TimeManager.GetWaitForSeconds(120f);
+        if(addEPrefab == null)
+        {
+            yield break;
+        }
         if (addEPrefab.isPoolable)
         {
             var pool = _poolableObjects[addEPrefab.eprefab];

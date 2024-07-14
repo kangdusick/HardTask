@@ -18,6 +18,7 @@ public class BlockSpawnLine : MonoBehaviour
     public static bool IsWhileBallSpawning => _isWhileSpawningCnt != 0;
     private void Awake()
     {
+        HexBlockContainer.blockSpawnLineList.Add(this);
         _newBlockMoveSpeed = TableManager.ConfigTableDict[EConfigTable.newBlockMoveSpeed].FloatValue;
         _spawnPointHexBlockContainer = GetComponent<HexBlockContainer>();
         _isWhileSpawningCnt = 0;

@@ -187,8 +187,6 @@ public enum EConfigTable
 	bossAttackCooldown3 = -1735709890,
 	[Description("bossAttackCooldown5")]
 	bossAttackCooldown5 = -1735709896,
-	[Description("bossAttack")]
-	bossAttack = 1548315468,
 	[Description("hpRecoveryEveryTurnWhenHide")]
 	hpRecoveryEveryTurnWhenHide = -1508690398,
 	

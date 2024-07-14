@@ -55,7 +55,7 @@
       {
         "key": "bossDefaultDamage",
         "IntValue": null,
-        "FloatValue": "100",
+        "FloatValue": "80",
         "IntArray": [],
         "FloatArray": [],
         "StringArray": []
@@ -144,14 +144,6 @@
         "key": "bossAttackCooldown5",
         "IntValue": null,
         "FloatValue": "2",
-        "IntArray": [],
-        "FloatArray": [],
-        "StringArray": []
-      },
-      {
-        "key": "bossAttack",
-        "IntValue": null,
-        "FloatValue": "50",
         "IntArray": [],
         "FloatArray": [],
         "StringArray": []

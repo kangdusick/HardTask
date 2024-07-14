@@ -21,8 +21,10 @@ public class Boss : CharacterBase
     [SerializeField] RectTransform _weaponEdgeRect;
 
     [SerializeField] BlockSpawnLine _leftSpawnLine;
-
     [SerializeField] BlockSpawnLine _rightSpawnLine;
+
+    [SerializeField] GameObject _finalPhaseEffect;
+
     [SerializeField] SkeletonGraphic _skeletonGraphic;
 
     [SerializeField] TMP_Text _attackCooldownText;
@@ -130,6 +132,7 @@ public class Boss : CharacterBase
                     GameUtil.Instance.ShowToastMessage(ELanguageTable.phaseDesc5);
                     break;
             }
+            _finalPhaseEffect.SetActive(_phase == EBossPhase.Final);
         }
     }
     private enum EReaperAnim
@@ -149,7 +152,7 @@ public class Boss : CharacterBase
         Phase = EBossPhase.Default;
         _isCanAttack = true;
         hpDict[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.bossDefaultHp].FloatValue;
-        attackDict[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.bossAttack].FloatValue;
+        attackDict[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.bossDefaultDamage].FloatValue;
         requireBallCntForStunDict[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.requireBallCntForStun].FloatValue;
         hpRegenWhenHideDict[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.hpRecoveryEveryTurnWhenHide].FloatValue;
 
@@ -210,6 +213,14 @@ public class Boss : CharacterBase
             if(isAllBallDestroy)
             {
                 await ChangeMap(EPrefab.BossPhase5);
+                gameObject.SetActive(true);
+                transform.SetParent(HexBlockContainer.hexBlockContainerMatrix[9,3].transform, false);
+                transform.localPosition = Vector3.zero;
+                Phase = EBossPhase.Final;
+                Stun = 0;
+                RemainAttackCooldown = attackCooldownDict.FinalValue_RoundToInt;
+                RmainBallCountForStun = requireBallCntForStunDict.FinalValue_RoundToInt;
+                await BallSpawnRoutine();
             }
         }
         await UniTask.Delay(1000);
@@ -237,7 +248,6 @@ public class Boss : CharacterBase
         _skeletonGraphic.Skeleton.SetSlotsToSetupPose();
         _skeletonGraphic.AnimationState.Apply(_skeletonGraphic.Skeleton);
     }
-    [Button]
     private async UniTask ChangeMap(EPrefab mapPrefab)
     {
         await UniTask.WaitWhile(() => !isBossTurn);
@@ -276,8 +286,10 @@ public class Boss : CharacterBase
                 tasks.Add(_rightSpawnLine.PushAndSpawnBlocksInLine());
                 break;
             case EBossPhase.Final:
-                tasks.Add(_leftSpawnLine.PushAndSpawnBlocksInLine());
-                tasks.Add(_rightSpawnLine.PushAndSpawnBlocksInLine());
+                foreach (var item in HexBlockContainer.blockSpawnLineList)
+                {
+                    tasks.Add(item.PushAndSpawnBlocksInLine());
+                }
                 break;
         }
         await UniTask.WhenAll(tasks);
