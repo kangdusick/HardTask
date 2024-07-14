@@ -484,6 +484,19 @@ public class GameUtil : MonoBehaviour
         }
     }
 
-
+    public void ShowToastMessage(string message)
+    {
+        PoolableManager.Instance.InstantiateAsync<ToastMessage>(EPrefab.ToastMessage).ContinueWithNullCheck(go =>
+        {
+            go.Init(message);
+        });
+    }
+    public void ShowToastMessage(ELanguageTable message)
+    {
+        PoolableManager.Instance.InstantiateAsync<ToastMessage>(EPrefab.ToastMessage).ContinueWithNullCheck(go =>
+        {
+            go.Init(message.LocalIzeText());
+        });
+    }
 
 }

@@ -13,6 +13,7 @@ public class Boss : CharacterBase
     public static Boss Instance;
     public StatusDictionary requireBallCntForStunDict = new();
     public StatusDictionary attackCooldownDict = new();
+    public StatusDictionary hpRegenWhenHideDict = new();
 
     private bool _isCanAttack;
     public bool IsCanAttack => !ReferenceEquals(Instance, null) && _isCanAttack;
@@ -107,23 +108,26 @@ public class Boss : CharacterBase
                 case EBossPhase.Default:
                     attackCooldownDict[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.bossAttackCooldown1].FloatValue;
                     RemainAttackCooldown = attackCooldownDict.FinalValue_RoundToInt;
+                    GameUtil.Instance.ShowToastMessage(ELanguageTable.phaseDesc1);
                     break;
                 case EBossPhase.LeftWing:
                     SetSkin("LeftWing");
                     SetAnim(EReaperAnim.LeftWingGrow);
                     attackCooldownDict[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.bossAttackCooldown2].FloatValue;
+                    GameUtil.Instance.ShowToastMessage(ELanguageTable.phaseDesc2);
                     break;
                 case EBossPhase.DoubleWing:
                     SetSkin("DoubleWing");
                     SetAnim(EReaperAnim.RightWingGrow);
                     attackCooldownDict[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.bossAttackCooldown3].FloatValue;
+                    GameUtil.Instance.ShowToastMessage(ELanguageTable.phaseDesc3);
                     break;
                 case EBossPhase.Hide:
-                    HidePhase();
-                    
+                    GameUtil.Instance.ShowToastMessage(ELanguageTable.phaseDesc4);
                     break;
                 case EBossPhase.Final:
                     attackCooldownDict[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.bossAttackCooldown5].FloatValue;
+                    GameUtil.Instance.ShowToastMessage(ELanguageTable.phaseDesc5);
                     break;
             }
         }
@@ -147,6 +151,7 @@ public class Boss : CharacterBase
         hpDict[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.bossDefaultHp].FloatValue;
         attackDict[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.bossAttack].FloatValue;
         requireBallCntForStunDict[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.requireBallCntForStun].FloatValue;
+        hpRegenWhenHideDict[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.hpRecoveryEveryTurnWhenHide].FloatValue;
 
         OnCurrentHpChange -= PhaseChange;
         OnCurrentHpChange += PhaseChange;
@@ -191,12 +196,26 @@ public class Boss : CharacterBase
         }
         else
         {
-            CurrentHp += hpDict.FinalValue * 0.05f;
+            CurrentHp += hpDict.FinalValue * hpRegenWhenHideDict.FinalValue*0.01f;
+            bool isAllBallDestroy = true;
+            foreach (var item in HexBlockContainer.hexBlockContainerList)
+            {
+                if (item.hexBlock != null && item.hexBlock.eBlockType != EBlockType.attatchPoint)
+                {
+                    isAllBallDestroy = false;
+                    break;
+                }
+            }
+
+            if(isAllBallDestroy)
+            {
+                await ChangeMap(EPrefab.BossPhase5);
+            }
         }
         await UniTask.Delay(1000);
         isBossTurn= false;
     }
-    private void PhaseChange()
+    private async void PhaseChange()
     {
         if (CurrentHpRate <= 0.75f && Phase == EBossPhase.Default)
         {
@@ -209,6 +228,7 @@ public class Boss : CharacterBase
         if (CurrentHpRate <= 0.25f && Phase == EBossPhase.DoubleWing)
         {
             Phase = EBossPhase.Hide;
+            await ChangeMap(EPrefab.BossPhase4);
         }
     }
     private void SetSkin(string skinName)
@@ -218,8 +238,9 @@ public class Boss : CharacterBase
         _skeletonGraphic.AnimationState.Apply(_skeletonGraphic.Skeleton);
     }
     [Button]
-    private async void HidePhase()
+    private async UniTask ChangeMap(EPrefab mapPrefab)
     {
+        await UniTask.WaitWhile(() => !isBossTurn);
         await UniTask.WaitWhile(() => isWhileSpawnBall);
         transform.SetParent(GameManager.Instance.worldCanvas.transform);
         foreach (var item in BallShooter.Instance.prepareBallList)
@@ -229,7 +250,7 @@ public class Boss : CharacterBase
         gameObject.SetActive(false);
         Destroy(BlockEditor.Instance.gameObject);
         await UniTask.Yield();
-        var map = PoolableManager.Instance.Instantiate<BlockEditor>(EPrefab.BossPhase4, parentTransform: GameManager.Instance.worldCanvas.transform);
+        var map = PoolableManager.Instance.Instantiate<BlockEditor>(mapPrefab, parentTransform: GameManager.Instance.worldCanvas.transform);
         map.transform.SetAsFirstSibling();
         foreach (var item in BallShooter.Instance.prepareBallList)
         {

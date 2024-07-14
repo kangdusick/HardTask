@@ -155,6 +155,14 @@
         "IntArray": [],
         "FloatArray": [],
         "StringArray": []
+      },
+      {
+        "key": "hpRecoveryEveryTurnWhenHide",
+        "IntValue": null,
+        "FloatValue": "3",
+        "IntArray": [],
+        "FloatArray": [],
+        "StringArray": []
       }
     ]
   },
@@ -174,6 +182,31 @@
         "key": "changePoint_Title",
         "kr": "변경사항",
         "en": "Change Point"
+      },
+      {
+        "key": "phaseDesc1",
+        "kr": "1페이즈: 구슬 리젠 없이 5턴마다 공격합니다.",
+        "en": "1st Phase: Attacks every 5 turns without orb regeneration."
+      },
+      {
+        "key": "phaseDesc2",
+        "kr": "2페이즈: 왼쪽 라인의 구슬이 리젠됩니다.",
+        "en": "2nd Phase: Orbs on the left line regenerate."
+      },
+      {
+        "key": "phaseDesc3",
+        "kr": "3페이즈: 양쪽 라인의 구슬이 리젠됩니다. 기절을 활용하세요",
+        "en": "3rd Phase: Orbs on both lines regenerate. Utilize stun."
+      },
+      {
+        "key": "phaseDesc4",
+        "kr": "4페이즈: 모든 구슬을 파괴할 때까지 사신이 체력을 매 턴 3% 회복합니다.",
+        "en": "4th Phase: The Reaper recovers 3% health each turn until all orbs are destroyed."
+      },
+      {
+        "key": "phaseDesc5",
+        "kr": "5페이즈: 최종장입니다. 사신을 처치하세요",
+        "en": "5th Phase: Final stage. Defeat the Reaper."
       },
       {
         "key": "Seal",

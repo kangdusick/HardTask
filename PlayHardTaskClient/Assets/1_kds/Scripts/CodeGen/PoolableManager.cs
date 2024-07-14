@@ -33,6 +33,8 @@ public enum EPrefab
 	BossPhase1_3 = 805187232,
 	[Description("BossPhase5")]
 	BossPhase5 = 1515919978,
+	[Description("ToastMessage")]
+	ToastMessage = -308916051,
 	[Description("HexBlock")]
 	HexBlock = 1671295265,
 	

@@ -189,6 +189,8 @@ public enum EConfigTable
 	bossAttackCooldown5 = -1735709896,
 	[Description("bossAttack")]
 	bossAttack = 1548315468,
+	[Description("hpRecoveryEveryTurnWhenHide")]
+	hpRecoveryEveryTurnWhenHide = -1508690398,
 	
 }
 
@@ -200,6 +202,16 @@ public enum ELanguageTable
 	changePoint_Desc = 443270917,
 	[Description("changePoint_Title")]
 	changePoint_Title = 871358152,
+	[Description("phaseDesc1")]
+	phaseDesc1 = -1122876200,
+	[Description("phaseDesc2")]
+	phaseDesc2 = -1122876197,
+	[Description("phaseDesc3")]
+	phaseDesc3 = -1122876198,
+	[Description("phaseDesc4")]
+	phaseDesc4 = -1122876195,
+	[Description("phaseDesc5")]
+	phaseDesc5 = -1122876196,
 	[Description("Seal")]
 	Seal = 4142072,
 	[Description("attack")]
