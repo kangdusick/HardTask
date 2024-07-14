@@ -414,8 +414,8 @@ public enum ELanguageTable
 	play = 4945189,
 	[Description("reaper")]
 	reaper = 626521422,
-	[Description("taejun")]
-	taejun = 569257602,
+	[Description("anubis")]
+	anubis = 943837359,
 	[Description("stun")]
 	stun = 5135963,
 	[Description("DetailInformation")]

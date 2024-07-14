@@ -23,6 +23,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - data
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 04e2738a92f4e22409582b75061a48e8
+    m_Address: Assets/1_kds/GangSpineExport/skeleton.json
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - data
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 2eacbe4a782805840a7928a630c6bd1b, type: 2}
   m_SchemaSet:

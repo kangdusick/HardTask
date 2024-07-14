@@ -69,7 +69,6 @@ public class HexBlockContainer : MonoBehaviour
         {
             var hexBlockPresetColor = hexBlock.eColor;
             var hexBlockPresetType = hexBlock.eBlockType;
-            Debug.Log($"{x},{y}");
             Destroy(hexBlock.gameObject); //프리셋으로 저장했던거 파괴 후 오브젝트 풀링으로 재생성
             PoolableManager.Instance.InstantiateAsync<HexBlock>(EPrefab.HexBlock, transform.position).ContinueWithNullCheck(x =>
             {

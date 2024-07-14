@@ -172,6 +172,7 @@ public class BallShooter : MonoBehaviour
         {
             return;
         }
+
         shootingBallMovingRoute.Clear();
         shootingBallMovingRoute.Add(_shootingStartPoint.position);
         EnableDestinePositionHint(false);
@@ -207,8 +208,13 @@ public class BallShooter : MonoBehaviour
 
         if (!ReferenceEquals(_destineHexBlockContainer, null))
         {
+            Player.Instance.ChangeIdleAnim(EGangAnimation.GangDungeon_AnubisCasting);
             shootingBallMovingRoute.Add(_destineHexBlockContainer.transform.position);
             EnableDestinePositionHint(true);
+        }
+        else
+        {
+            Player.Instance.ChangeIdleAnim(EGangAnimation.GangDungeon_AnubisIdle);
         }
     }
     private void EnableDestinePositionHint(bool isEnable)
@@ -262,6 +268,8 @@ public class BallShooter : MonoBehaviour
             {
                 NeroOrbContainer.Instance.EnableNeroOrbContainer(true);
             }
+            Player.Instance.currentIdleAnim = EGangAnimation.GangDungeon_AnubisIdle.OriginName();
+            Player.Instance.SetAnim(EGangAnimation.GangDungeon_AnubisCastDone);
             prepareBallList.Remove(shootingBall);
             isWhileBallShooterRoutine = true;
             _shootingLineRenderer.gameObject.SetActive(false);

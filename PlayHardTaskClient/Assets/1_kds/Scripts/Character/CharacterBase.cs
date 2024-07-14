@@ -1,9 +1,9 @@
 using CodeStage.AntiCheat.ObscuredTypes;
+using Spine;
+using Spine.Unity;
 using System;
-using System.Collections;
-using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
-
 public class CharacterBase : MonoBehaviour
 {
     [SerializeField] HpBar _hpBar;
@@ -11,6 +11,9 @@ public class CharacterBase : MonoBehaviour
     public Action OnCurrentHpChange;
     public StatusDictionary attackDict = new();
     public StatusDictionary hpDict = new();
+
+    [SerializeField] protected SkeletonGraphic _skeletonGraphic;
+    protected TrackEntry _spineCharacterTrackEntry;
 
     public ObscuredFloat LostHpRate;
     public ObscuredFloat CurrentHpRate;
@@ -32,8 +35,14 @@ public class CharacterBase : MonoBehaviour
     }
 
     private ObscuredFloat beforeFinalHp;
+
+    [HideInInspector] public string currentIdleAnim;
+
     protected virtual void Awake()
     {
+        _skeletonGraphic.AnimationState.Complete -= OnAnimationComplete;
+        _skeletonGraphic.AnimationState.Complete += OnAnimationComplete;
+
         _currentHp = hpDict.FinalValue;
         beforeFinalHp = 0f;
         hpDict.OnChanged -= SetFinalHp;
@@ -62,9 +71,43 @@ public class CharacterBase : MonoBehaviour
     public void OnDamaged(float damage)
     {
         CurrentHp -= damage;
-        PoolableManager.Instance.InstantiateAsync<DamageText>(EPrefab.DamageText,transform.position + Vector3.up * 50f,parentTransform: GameObject.FindGameObjectWithTag(ETag.WorldCanvas.ToString()).transform).ContinueWithNullCheck(x =>
+        PoolableManager.Instance.InstantiateAsync<DamageText>(EPrefab.DamageText, transform.position + Vector3.up * 50f, parentTransform: GameObject.FindGameObjectWithTag(ETag.WorldCanvas.ToString()).transform).ContinueWithNullCheck(x =>
         {
-            x.Init(damage,Color.red);
+            x.Init(damage, Color.red);
         });
+    }
+    public void SetAnim(string spineAnim)
+    {
+        if (!ReferenceEquals(_spineCharacterTrackEntry,null) &&_spineCharacterTrackEntry.Animation.Name.Equals(spineAnim))
+        {
+            return;
+        }
+        if (spineAnim.Equals(currentIdleAnim))
+        {
+            SetAnim(spineAnim, true);
+        }
+        else
+        {
+            SetAnim(spineAnim, false);
+        }
+    }
+    public void SetAnim(EGangAnimation eGangAnimation)
+    {
+        SetAnim(eGangAnimation.OriginName());
+    }
+    protected void SetAnim(string spineAnim, bool isLoop = false, int track = 0)
+    {
+        _spineCharacterTrackEntry = _skeletonGraphic.AnimationState.SetAnimation(track, spineAnim, isLoop);
+    }
+    protected void OnAnimationComplete(TrackEntry trackEntry)
+    {
+        if (!trackEntry.Animation.Name.Equals(currentIdleAnim))
+        {
+            SetAnim(currentIdleAnim);
+        }
+    }
+    protected virtual void HandleAnimationStateEvent(TrackEntry trackEntry, Spine.Event e)
+    {
+
     }
 }

@@ -33,9 +33,14 @@ public class Player : CharacterBase
         smallBombSpawnChanceDict[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.smallBombSpawnChance].FloatValue;
         neroDirectAttackDamageDict[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.neroBallDirectDamage].FloatValue;
         stunDurationDict[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.stunDuration].FloatValue;
+        ChangeIdleAnim(EGangAnimation.GangDungeon_AnubisIdle);
     }
     
-   
+    public void ChangeIdleAnim(EGangAnimation idleAnim)
+    {
+        currentIdleAnim = idleAnim.OriginName();
+        SetAnim(idleAnim);
+    }
     public void TurnEnd()
     {
         OnPlayerTurnEnd?.Invoke();

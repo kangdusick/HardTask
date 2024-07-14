@@ -25,12 +25,10 @@ public class Boss : CharacterBase
 
     [SerializeField] GameObject _finalPhaseEffect;
 
-    [SerializeField] SkeletonGraphic _skeletonGraphic;
 
     [SerializeField] TMP_Text _attackCooldownText;
     [SerializeField] TMP_Text _stunText;
 
-    private TrackEntry _spineCharacterTrackEntry;
     private bool isWhileSpawnBall;
 
     private int _stun;
@@ -47,8 +45,8 @@ public class Boss : CharacterBase
             _stunText.text = $"{ELanguageTable.stun.LocalIzeText()}:{_stun}";
             if(_stun<=0)
             {
-                _currentIdleAnim = EReaperAnim.Idle;
-                SetAnim(EReaperAnim.Idle);
+                currentIdleAnim = EReaperAnim.Idle.ToString();
+                SetAnim(EReaperAnim.Idle.ToString());
                 RmainBallCountForStun = requireBallCntForStunDict.FinalValue_RoundToInt;
             }
         }
@@ -67,8 +65,8 @@ public class Boss : CharacterBase
             _stunText.text = $"{ELanguageTable.stun.LocalIzeText()}:{_rmainBallCountForStun}";
             if(_rmainBallCountForStun<=0)
             {
-                _currentIdleAnim = EReaperAnim.Stun;
-                SetAnim(EReaperAnim.Stun);
+                currentIdleAnim = EReaperAnim.Stun.ToString();
+                SetAnim(EReaperAnim.Stun.ToString());
                 RemainAttackCooldown = attackCooldownDict.FinalValue_RoundToInt;
                 Stun = Player.Instance.stunDurationDict.FinalValue_RoundToInt;
             }
@@ -118,13 +116,13 @@ public class Boss : CharacterBase
                     break;
                 case EBossPhase.LeftWing:
                     SetSkin("LeftWing");
-                    SetAnim(EReaperAnim.LeftWingGrow);
+                    SetAnim(EReaperAnim.LeftWingGrow.ToString());
                     attackCooldownDict[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.bossAttackCooldown2].FloatValue;
                     GameUtil.Instance.ShowToastMessage(ELanguageTable.phaseDesc2);
                     break;
                 case EBossPhase.DoubleWing:
                     SetSkin("DoubleWing");
-                    SetAnim(EReaperAnim.RightWingGrow);
+                    SetAnim(EReaperAnim.RightWingGrow.ToString());
                     attackCooldownDict[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.bossAttackCooldown3].FloatValue;
                     GameUtil.Instance.ShowToastMessage(ELanguageTable.phaseDesc3);
                     break;
@@ -147,7 +145,6 @@ public class Boss : CharacterBase
         RightWingGrow,
         Stun,
     }
-    private EReaperAnim _currentIdleAnim;
 
     protected override void Awake()
     {
@@ -168,11 +165,10 @@ public class Boss : CharacterBase
 
         _skeletonGraphic.AnimationState.Event -= HandleAnimationStateEvent;
         _skeletonGraphic.AnimationState.Event += HandleAnimationStateEvent;
-        _skeletonGraphic.AnimationState.Complete -= OnAnimationComplete;
-        _skeletonGraphic.AnimationState.Complete += OnAnimationComplete;
-        _currentIdleAnim = EReaperAnim.Idle;
+       
+        currentIdleAnim = EReaperAnim.Idle.ToString();
 
-        SetAnim(_currentIdleAnim);
+        SetAnim(currentIdleAnim);
         HexBlock.OnBlockDamaged -= OnBlockDamaged;
         HexBlock.OnBlockDamaged += OnBlockDamaged;
        
@@ -194,7 +190,7 @@ public class Boss : CharacterBase
         isBossTurn = true;
         if (_phase != EBossPhase.Hide)
         {
-            if (_currentIdleAnim == EReaperAnim.Stun)
+            if (currentIdleAnim == EReaperAnim.Stun.ToString())
             {
                 Stun--;
             }
@@ -301,34 +297,11 @@ public class Boss : CharacterBase
     }
     private void DoAttack()
     {
-        SetAnim(EReaperAnim.Attack);
+        SetAnim(EReaperAnim.Attack.ToString());
     }
-    private void SetAnim(EReaperAnim eReaperAnim)
+    protected override void HandleAnimationStateEvent(TrackEntry trackEntry, Spine.Event e)
     {
-        switch (eReaperAnim)
-        {
-            case EReaperAnim.Idle:
-            case EReaperAnim.Stun:
-                SetAnim(eReaperAnim, true);
-                break;
-            default:
-                SetAnim(eReaperAnim, false);
-                break;
-        }
-    }
-    private void SetAnim(EReaperAnim eSpineAnim, bool isLoop = false, int track = 0)
-    {
-        _spineCharacterTrackEntry = _skeletonGraphic.AnimationState.SetAnimation(track, eSpineAnim.OriginName(), isLoop);
-    }
-    private void OnAnimationComplete(TrackEntry trackEntry)
-    {
-        if (!trackEntry.Animation.Name.Equals(_currentIdleAnim.ToString()))
-        {
-            SetAnim(_currentIdleAnim);
-        }
-    }
-    private void HandleAnimationStateEvent(TrackEntry trackEntry, Spine.Event e)
-    {
+        base.HandleAnimationStateEvent(trackEntry, e);
         switch (e.Data.Name)
         {
             case "Attack":
@@ -342,4 +315,5 @@ public class Boss : CharacterBase
                 break;
         }
     }
+
 }
