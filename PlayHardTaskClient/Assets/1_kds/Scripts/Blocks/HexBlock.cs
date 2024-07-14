@@ -37,14 +37,6 @@ public class HexBlock : MonoBehaviour
     public bool isAttatcfairy = false;
     public bool IsCantDestroyAndMove => (eBlockType == EBlockType.attatchPoint || eBlockType == EBlockType.attatchPoint_Spawn || eBlockType == EBlockType.boss);
     public static Action OnBlockDamaged;
-    private void Awake()
-    {
-        if(!ReferenceEquals(BlockEditor.Instance,null))
-        {
-            transform.SetParent(BlockEditor.Instance.transform);
-            transform.rotation = Quaternion.identity;
-        }
-    }
     public void Init(EColor eColor, EBlockType eBlockType)
     {
         _attatchedFairy = null;
@@ -88,6 +80,7 @@ public class HexBlock : MonoBehaviour
             hexBlockContainer.hexBlock = this;
             x = hexBlockContainer.x;
             y = hexBlockContainer.y;
+            transform.SetParent(BlockEditor.Instance.transform);
         }
     }
     public async UniTask SetHexBlockContainerWithMove(HexBlockContainer hexBlockContainer, float moveSpeed, List<Vector3> movingRoute = null, bool isMoveDirectly = false, bool isTimeBase = false)

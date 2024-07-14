@@ -223,8 +223,9 @@ public class Boss : CharacterBase
                 await BallSpawnRoutine();
             }
         }
+        GameManager.Instance.SetView();
         await UniTask.Delay(1000);
-        isBossTurn= false;
+        isBossTurn = false;
     }
     private async void PhaseChange()
     {
@@ -253,20 +254,11 @@ public class Boss : CharacterBase
         await UniTask.WaitWhile(() => !isBossTurn);
         await UniTask.WaitWhile(() => isWhileSpawnBall);
         transform.SetParent(GameManager.Instance.worldCanvas.transform);
-        foreach (var item in BallShooter.Instance.prepareBallList)
-        {
-            item.transform.SetParent(GameManager.Instance.worldCanvas.transform);
-        }
         gameObject.SetActive(false);
         Destroy(BlockEditor.Instance.gameObject);
         await UniTask.Yield();
         var map = PoolableManager.Instance.Instantiate<BlockEditor>(mapPrefab, parentTransform: GameManager.Instance.worldCanvas.transform);
         map.transform.SetAsFirstSibling();
-        foreach (var item in BallShooter.Instance.prepareBallList)
-        {
-            item.transform.SetParent(map.transform);
-        }
-
     }
     private async UniTask BallSpawnRoutine()
     {
@@ -274,6 +266,7 @@ public class Boss : CharacterBase
         {
             return;
         }
+        await UniTask.WaitWhile(()=>GameManager.Instance.isWhileMapMoving);
         List<UniTask> tasks = new List<UniTask>();
         isWhileSpawnBall = true;
         switch (Phase)

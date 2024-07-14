@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using Sirenix.OdinInspector;
 using System;
@@ -39,7 +40,7 @@ public class HexBlockContainer : MonoBehaviour
             _hintEffectAnim.DOPause();
         }
     }
-    public static void InitHexBlockContainerMatrix(int width, int height)
+    public static async void InitHexBlockContainerMatrix(int width, int height)
     {
         hexBlockContainerMatrix = new HexBlockContainer[width, height];
         hexBlockContainerList.Clear();
@@ -55,6 +56,9 @@ public class HexBlockContainer : MonoBehaviour
                 hexBlockContainerList.Add(hexBlockContainer);
             }
         }
+        await UniTask.Delay(1500);
+        GameManager.Instance.SetView();
+
     }
 
     private void Start()

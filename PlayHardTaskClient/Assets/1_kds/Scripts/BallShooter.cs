@@ -89,7 +89,7 @@ public class BallShooter : MonoBehaviour
     private List<Vector3> shootingBallMovingRoute = new();
     private const float shootingBallSpeed = 1200f;
     public bool isWhileBallShooterRoutine;
-    [HideInInspector] public List<HexBlock> prepareBallList = new();
+    private List<HexBlock> _prepareBallList = new();
     static readonly float[] angleList = { 90f, -30f, -150f, -270f };
     private List<HexBlockContainer> _enabledHintBlockList = new(); 
     private void Awake()
@@ -104,10 +104,10 @@ public class BallShooter : MonoBehaviour
     public async void FillNeroOrbDirectly()
     {
         isWhileBallShooterRoutine = true;
-        var secrifiedBall = prepareBallList[0];
+        var secrifiedBall = _prepareBallList[0];
         secrifiedBall.transform.DOMove(NeroOrbContainer.Instance.transform.position,0.25f);
         await UniTask.Delay(250);
-        prepareBallList.Remove(secrifiedBall);
+        _prepareBallList.Remove(secrifiedBall);
         PoolableManager.Instance.Destroy(secrifiedBall.gameObject);
         NeroOrbContainer.Instance.RemainNeroOrbCount -= 10;
         isWhileBallShooterRoutine = false;
@@ -116,7 +116,7 @@ public class BallShooter : MonoBehaviour
     }
     public void PrefareBall(bool isNeroOrb = false)
     {
-        while (prepareBallList.Count<2)
+        while (_prepareBallList.Count<2)
         {
             HexBlock newBall = null;
             if (isNeroOrb)
@@ -129,41 +129,42 @@ public class BallShooter : MonoBehaviour
                 newBall = PoolableManager.Instance.Instantiate<HexBlock>(EPrefab.HexBlock, _shootingStartPoint.position);
                 newBall.Init(HexBlockContainer.EColorList.Random(), EBlockType.normal);
             }
+            newBall.transform.SetParent(transform);
             newBall.transform.localScale = Vector3.zero;
             newBall.transform.DOScale(Vector3.one, 0.5f).SetEase(Ease.OutBack);
-            prepareBallList.Insert(0, newBall);
+            _prepareBallList.Insert(0, newBall);
             RotateBall();
         }
     }
     public void RotateBall()
     {
         // 새로운 리스트 생성하여 회전된 공들의 순서를 저장
-        List<HexBlock> rotatedList = new List<HexBlock>(prepareBallList.Count);
+        List<HexBlock> rotatedList = new List<HexBlock>(_prepareBallList.Count);
 
         // 새로운 리스트에 회전된 순서로 공들을 추가
-        for (int i = 0; i < prepareBallList.Count; i++)
+        for (int i = 0; i < _prepareBallList.Count; i++)
         {
             rotatedList.Add(null);
         }
 
-        for (int i = 0; i < prepareBallList.Count; i++)
+        for (int i = 0; i < _prepareBallList.Count; i++)
         {
-            if (i == prepareBallList.Count - 1)
+            if (i == _prepareBallList.Count - 1)
             {
-                prepareBallList[i].RotateAroundCircle(angleList[i], angleList[3]);
-                rotatedList[0] = prepareBallList[i];
+                _prepareBallList[i].RotateAroundCircle(angleList[i], angleList[3]);
+                rotatedList[0] = _prepareBallList[i];
             }
             else
             {
-                prepareBallList[i].RotateAroundCircle(angleList[i], angleList[i + 1]);
-                rotatedList[i + 1] = prepareBallList[i];
+                _prepareBallList[i].RotateAroundCircle(angleList[i], angleList[i + 1]);
+                rotatedList[i + 1] = _prepareBallList[i];
             }
         }
 
         // 새로운 순서로 원래 리스트를 업데이트
-        for (int i = 0; i < prepareBallList.Count; i++)
+        for (int i = 0; i < _prepareBallList.Count; i++)
         {
-            prepareBallList[i] = rotatedList[i];
+            _prepareBallList[i] = rotatedList[i];
         }
     }
     void SetDestineHexBlockContainer(Vector2 screenPos) //마우스 클릭 중에 조준선이 활성화되며 구슬이 어디에 도착할지 표시해준다.
@@ -226,7 +227,7 @@ public class BallShooter : MonoBehaviour
                 _destineHexBlockContainer.EnableHintEffect(true);
                 _enabledHintBlockList.Add(_destineHexBlockContainer);
 
-                if (prepareBallList[0].eBlockType == EBlockType.bomb_Range2_neroOrb)
+                if (_prepareBallList[0].eBlockType == EBlockType.bomb_Range2_neroOrb)
                 {
                     var neroOrbRange = _destineHexBlockContainer.GetNeighborContainerBlockList(2);
                     foreach (var item in neroOrbRange)
@@ -263,14 +264,14 @@ public class BallShooter : MonoBehaviour
         }
         if (!ReferenceEquals(_destineHexBlockContainer, null))
         {
-            var shootingBall = prepareBallList[0];
+            var shootingBall = _prepareBallList[0];
             if(shootingBall.eBlockType == EBlockType.bomb_Range2_neroOrb)
             {
                 NeroOrbContainer.Instance.EnableNeroOrbContainer(true);
             }
             Player.Instance.currentIdleAnim = EGangAnimation.GangDungeon_AnubisIdle.OriginName();
             Player.Instance.SetAnim(EGangAnimation.GangDungeon_AnubisCastDone);
-            prepareBallList.Remove(shootingBall);
+            _prepareBallList.Remove(shootingBall);
             isWhileBallShooterRoutine = true;
             _shootingLineRenderer.gameObject.SetActive(false);
             var bossBlock = IsBossAttackDirectly();
@@ -285,6 +286,7 @@ public class BallShooter : MonoBehaviour
                 await FindMatchAndDestroyBalls(shootingBall);
             }
             EnableDestinePositionHint(false);
+            GameManager.Instance.SetView();
             PrefareBall();
             isWhileBallShooterRoutine = false;
             Player.Instance.TurnEnd();

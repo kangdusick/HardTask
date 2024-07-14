@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using Sirenix.OdinInspector;
 using System.Collections;
@@ -11,7 +12,8 @@ public class GameManager : MonoBehaviour
 {
     public static bool isInGame => SceneManager.GetActiveScene().name == "Game";
     public static GameManager Instance;
-    public bool IsCanMouseClick => !BallShooter.Instance.isWhileBallShooterRoutine && !BlockSpawnLine.IsWhileBallSpawning && !Boss.Instance.isBossTurn;
+    public bool IsCanMouseClick => !BallShooter.Instance.isWhileBallShooterRoutine && !BlockSpawnLine.IsWhileBallSpawning && !Boss.Instance.isBossTurn && !isWhileMapMoving;
+    public bool isWhileMapMoving;
     public Canvas worldCanvas;
 
     private void Awake()
@@ -34,5 +36,24 @@ public class GameManager : MonoBehaviour
         }
         worldCanvas = GameObject.FindGameObjectWithTag(ETag.WorldCanvas.ToString()).GetComponent<Canvas>();
         PoolableManager.Instance.Instantiate<PopCommon>(EPrefab.PopCommon).OpenPopup(ELanguageTable.changePoint_Title.LocalIzeText(),ELanguageTable.changePoint_Desc.LocalIzeText());
+    }
+    public void SetView()
+    {
+        isWhileMapMoving = true;
+        BlockEditor.Instance.transform.DOKill();
+        int maxIndexY = 0;
+        foreach (var item in HexBlockContainer.hexBlockContainerList)
+        {
+            if (!ReferenceEquals(item.hexBlock, null) && item.y >= maxIndexY)
+            {
+                maxIndexY = item.y;
+            }
+        }
+        float mapMove = Mathf.Max(0, maxIndexY - 9) * 75f;
+        Debug.Log($"{maxIndexY} {mapMove}");
+        BlockEditor.Instance.transform.DOMove(Vector3.up * mapMove, 0.3f).OnComplete(() =>
+        {
+            isWhileMapMoving = false;
+        });
     }
 }
