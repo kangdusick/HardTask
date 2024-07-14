@@ -39,6 +39,10 @@ public class Boss : CharacterBase
         get { return _stun; }
         set
         {
+            if (Phase == EBossPhase.Hide)
+            {
+                return;
+            }
             _stun = value;
             _stunText.text = $"{ELanguageTable.stun.LocalIzeText()}:{_stun}";
             if(_stun<=0)
@@ -55,7 +59,7 @@ public class Boss : CharacterBase
         get { return _rmainBallCountForStun; }
         set
         {
-            if(Stun>0)
+            if(Stun> 0 || Phase == EBossPhase.Hide)
             {
                 return;
             }
@@ -76,7 +80,7 @@ public class Boss : CharacterBase
         get { return _remainAttackCooldown; }
         set
         {
-            if (Stun > 0)
+            if (Stun > 0 || Phase == EBossPhase.Hide)
             {
                 return;
             }

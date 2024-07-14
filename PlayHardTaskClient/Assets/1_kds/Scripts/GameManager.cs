@@ -24,7 +24,14 @@ public class GameManager : MonoBehaviour
         float targetWidth = 1080f;
         float targetHeight = 1920f;
         float targetRate = targetWidth / targetHeight;
-        Camera.main.orthographicSize = 820f * targetRate / screenRate;
+        if(targetRate>=screenRate)
+        {
+            Camera.main.orthographicSize = 820f * targetRate / screenRate;
+        }
+        else
+        {
+            Camera.main.orthographicSize = 820f;
+        }
         worldCanvas = GameObject.FindGameObjectWithTag(ETag.WorldCanvas.ToString()).GetComponent<Canvas>();
         PoolableManager.Instance.Instantiate<PopCommon>(EPrefab.PopCommon).OpenPopup(ELanguageTable.changePoint_Title.LocalIzeText(),ELanguageTable.changePoint_Desc.LocalIzeText());
     }

@@ -45,11 +45,5 @@ public class PopCommon : BasePopup
             OnClickOk?.Invoke();
             OnClose();
         });
-
-    }
-    public override void OnClose()
-    {
-        base.OnClose();
-        Application.Quit();
     }
 }
