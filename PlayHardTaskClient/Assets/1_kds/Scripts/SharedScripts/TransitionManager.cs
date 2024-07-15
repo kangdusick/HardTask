@@ -14,11 +14,16 @@ public class TransitionManager : MonoBehaviour
     {
         DontDestroyOnLoad(this);
         SceneManager.sceneLoaded += OnSceneLoaded;
+        ClearStaticMembers();
+        Time.timeScale = 1f;
+    }
+    private void ClearStaticMembers()
+    {
         BasePopup.popupList.Clear();
         BasePopup.currentSortingOrder = 0;
         TMPLinkDetector.popLinkInfoSet.Clear();
         HexBlock.OnBlockDamaged = null;
-        Time.timeScale = 1f;
+        PopSelectAbility.appliedAbiliySet.Clear();
     }
     private void OnSceneLoaded(Scene scene,LoadSceneMode loadSceneMode)
     {

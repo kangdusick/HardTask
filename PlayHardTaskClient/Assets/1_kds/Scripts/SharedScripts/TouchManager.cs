@@ -56,10 +56,6 @@ public class TouchManager : MonoBehaviour
 
     private void LateUpdate()
     {
-        if(BasePopup.popupList.Count>0)
-        {
-            return;
-        }
         if (Input.touchCount > 0) //터치패드 환경
         {
             foreach (Touch touch in Input.touches)

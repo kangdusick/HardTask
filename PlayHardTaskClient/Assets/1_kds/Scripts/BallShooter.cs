@@ -173,6 +173,10 @@ public class BallShooter : MonoBehaviour
         {
             return;
         }
+        if (BasePopup.popupList.Count > 0)
+        {
+            return;
+        }
 
         shootingBallMovingRoute.Clear();
         shootingBallMovingRoute.Add(_shootingStartPoint.position);
@@ -258,8 +262,9 @@ public class BallShooter : MonoBehaviour
     }
     private async void ShootingBall(Vector2 screenPos)
     {
-        if (!GameManager.Instance.IsCanMouseClick)
+        if (BasePopup.popupList.Count > 0 || !GameManager.Instance.IsCanMouseClick)
         {
+            EnableDestinePositionHint(false);
             return;
         }
         if (!ReferenceEquals(_destineHexBlockContainer, null))

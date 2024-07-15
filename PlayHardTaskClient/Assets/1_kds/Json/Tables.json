@@ -4699,14 +4699,14 @@
         "nameLanguageKey": "ability1",
         "descLanguageKey": "ability1_Desc",
         "statusType": 0,
-        "amount": 1
+        "amount": -10
       },
       {
         "key": "ability2",
         "nameLanguageKey": "ability2",
         "descLanguageKey": "ability2_Desc",
         "statusType": 0,
-        "amount": 5
+        "amount": -10
       },
       {
         "key": "ability3",
@@ -4734,7 +4734,7 @@
         "nameLanguageKey": "ability6",
         "descLanguageKey": "ability6_Desc",
         "statusType": 3,
-        "amount": 500
+        "amount": 50
       },
       {
         "key": "ability7",

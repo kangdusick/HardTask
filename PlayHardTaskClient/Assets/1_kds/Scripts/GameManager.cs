@@ -3,6 +3,7 @@ using DG.Tweening;
 using Sirenix.OdinInspector;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -54,5 +55,26 @@ public class GameManager : MonoBehaviour
         {
             isWhileMapMoving = false;
         });
+    }
+    public void OnClickDetailedInformation()
+    {
+        var descStringBuilderText = new StringBuilder();
+        descStringBuilderText.Append(ELanguageTable.anubis.LocalIzeText()+"\n");
+        descStringBuilderText.Append($"hp: {Player.Instance.hpDict.FinalValueDescription}\n");
+        descStringBuilderText.Append($"attack: {Player.Instance.fairySpawnChanceDict.FinalValueDescription}\n");
+        descStringBuilderText.Append($"fairySpawnChance: {Player.Instance.fairyDamageDict.FinalValueDescription}\n");
+        descStringBuilderText.Append($"directAttackDamage: {Player.Instance.directAttackDamageDict.FinalValueDescription}\n");
+        descStringBuilderText.Append($"neroDirectAttackDamage: {Player.Instance.neroDirectAttackDamageDict.FinalValueDescription}\n");
+        descStringBuilderText.Append($"stunDuration: {Player.Instance.stunDurationDict.FinalValueDescription}\n");
+        descStringBuilderText.Append($"requireBallForNeroOrb: {Player.Instance.requireBallForNeroOrbDict.FinalValueDescription}\n");
+        descStringBuilderText.Append($"smallBombSpawnChance: {Player.Instance.smallBombSpawnChanceDict.FinalValueDescription}\n");
+
+        descStringBuilderText.Append("\n" + ELanguageTable.reaper.LocalIzeText() + "\n");
+        descStringBuilderText.Append($"attack: {Boss.Instance.attackDict.FinalValueDescription}\n");
+        descStringBuilderText.Append($"hp: {Boss.Instance.hpDict.FinalValueDescription}\n");
+        descStringBuilderText.Append($"requireBallCntForStun: {Boss.Instance.requireBallCntForStunDict.FinalValueDescription}\n");
+        descStringBuilderText.Append($"attackCooldown: {Boss.Instance.attackCooldownDict.FinalValueDescription}\n");
+        descStringBuilderText.Append($"hpRegenWhenHide: {Boss.Instance.hpRegenWhenHideDict.FinalValueDescription}\n");
+        PoolableManager.Instance.Instantiate<PopCommon>(EPrefab.PopCommon).OpenPopup(ELanguageTable.DetailInformation.LocalIzeText(), descStringBuilderText.ToString());
     }
 }
