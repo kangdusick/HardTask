@@ -10,7 +10,7 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    public static bool isInGame => SceneManager.GetActiveScene().name == "Game";
+    public static bool isInGame => SceneManager.GetActiveScene().name.Equals("Game");
     public static GameManager Instance;
     public bool IsCanMouseClick => !BallShooter.Instance.isWhileBallShooterRoutine && !BlockSpawnLine.IsWhileBallSpawning && !Boss.Instance.isBossTurn && !isWhileMapMoving;
     public bool isWhileMapMoving;

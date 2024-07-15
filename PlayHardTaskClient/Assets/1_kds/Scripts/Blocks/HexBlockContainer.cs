@@ -56,7 +56,9 @@ public class HexBlockContainer : MonoBehaviour
                 hexBlockContainerList.Add(hexBlockContainer);
             }
         }
-        await UniTask.Delay(1500);
+        Debug.Log("InitHexBlockContainerMatrix");
+        await UniTask.Yield();
+        Debug.Log("InitHexBlockContainerMatrix2");
         GameManager.Instance.SetView();
 
     }
@@ -74,11 +76,10 @@ public class HexBlockContainer : MonoBehaviour
             var hexBlockPresetColor = hexBlock.eColor;
             var hexBlockPresetType = hexBlock.eBlockType;
             Destroy(hexBlock.gameObject); //프리셋으로 저장했던거 파괴 후 오브젝트 풀링으로 재생성
-            PoolableManager.Instance.InstantiateAsync<HexBlock>(EPrefab.HexBlock, transform.position).ContinueWithNullCheck(x =>
-            {
-                x.Init(hexBlockPresetColor, hexBlockPresetType);
-                x.SetHexBlockContainerWithMove(this, 1000f);
-            });
+            var block = PoolableManager.Instance.Instantiate<HexBlock>(EPrefab.HexBlock, transform.position);
+            block.Init(hexBlockPresetColor, hexBlockPresetType);
+            block.SetHexBlockContainerWithMove(this, 1000f, null, true);
+            Debug.Log("ReplacePresetToPoolingObject");
         }
     }
     public List<HexBlockContainer> GetNeighborContainerBlockList(int neighborRange = 1)

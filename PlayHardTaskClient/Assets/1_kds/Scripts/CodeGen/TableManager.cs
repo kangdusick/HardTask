@@ -210,6 +210,12 @@ public enum ELanguageTable
 	phaseDesc4 = -1122876195,
 	[Description("phaseDesc5")]
 	phaseDesc5 = -1122876196,
+	[Description("win")]
+	win = 170379,
+	[Description("lose")]
+	lose = 5289780,
+	[Description("gameEndDesc")]
+	gameEndDesc = 1132540719,
 	[Description("Seal")]
 	Seal = 4142072,
 	[Description("attack")]

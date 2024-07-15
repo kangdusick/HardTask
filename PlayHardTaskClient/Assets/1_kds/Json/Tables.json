@@ -201,6 +201,21 @@
         "en": "5th Phase: Final stage. Defeat the Reaper."
       },
       {
+        "key": "win",
+        "kr": "승리",
+        "en": "Win"
+      },
+      {
+        "key": "lose",
+        "kr": "패배",
+        "en": "Lose"
+      },
+      {
+        "key": "gameEndDesc",
+        "kr": "로딩 화면으로 돌아갑니다.",
+        "en": "Back To Loading Scene"
+      },
+      {
         "key": "Seal",
         "kr": "봉인",
         "en": "Seal"

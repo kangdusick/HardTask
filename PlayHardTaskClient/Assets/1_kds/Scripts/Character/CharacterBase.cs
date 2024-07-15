@@ -23,11 +23,7 @@ public class CharacterBase : MonoBehaviour
         get { return _currentHp; }
         set
         {
-            _currentHp = value;
-            if (_currentHp > hpDict.FinalValue)
-            {
-                _currentHp = hpDict.FinalValue;
-            }
+            _currentHp = Mathf.Clamp(value,0f, hpDict.FinalValue);
             CurrentHpRate = _currentHp / hpDict.FinalValue;
             LostHpRate = 1f - CurrentHpRate;
             OnCurrentHpChange?.Invoke();
@@ -35,6 +31,7 @@ public class CharacterBase : MonoBehaviour
     }
 
     private ObscuredFloat beforeFinalHp;
+    protected bool isStatusDictInit;
 
     [HideInInspector] public string currentIdleAnim;
 
@@ -67,7 +64,10 @@ public class CharacterBase : MonoBehaviour
         }
         beforeFinalHp = hpDict.FinalValue;
     }
-
+    protected virtual void SetStatusDict()
+    {
+        isStatusDictInit = true;
+    }
     public void OnDamaged(float damage)
     {
         CurrentHp -= damage;

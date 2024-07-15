@@ -1,3 +1,4 @@
+using CodeStage.AntiCheat.ObscuredTypes;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using Sirenix.OdinInspector;
@@ -91,7 +92,21 @@ public class Boss : CharacterBase
             _attackCooldownText.text = $"{ELanguageTable.attack}:{_remainAttackCooldown}";
         }
     }
-
+    public override ObscuredFloat CurrentHp
+    {
+        get => base.CurrentHp;
+        set
+        {
+            base.CurrentHp = value;
+            if (isStatusDictInit && base.CurrentHp <= 0f)
+            {
+                PoolableManager.Instance.Instantiate<PopCommon>(EPrefab.PopCommon).OpenPopup(ELanguageTable.win.LocalIzeText(), ELanguageTable.gameEndDesc.LocalIzeText(), () =>
+                {
+                    GameUtil.Instance.LoadScene("Load");
+                });
+            }
+        }
+    }
     enum EBossPhase
     {
         Default = 0,
@@ -152,16 +167,12 @@ public class Boss : CharacterBase
         Instance = this;
         Phase = EBossPhase.Default;
         _isCanAttack = true;
-        hpDict[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.bossDefaultHp].FloatValue;
-        attackDict[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.bossDefaultDamage].FloatValue;
-        requireBallCntForStunDict[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.requireBallCntForStun].FloatValue;
-        hpRegenWhenHideDict[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.hpRecoveryEveryTurnWhenHide].FloatValue;
 
+        SetStatusDict();
         OnCurrentHpChange -= PhaseChange;
         OnCurrentHpChange += PhaseChange;
 
-        _leftSpawnLine.PushAndSpawnBlocksInLine();
-        _rightSpawnLine.PushAndSpawnBlocksInLine();
+        BallSpawnRoutine(EBossPhase.DoubleWing);
 
         _skeletonGraphic.AnimationState.Event -= HandleAnimationStateEvent;
         _skeletonGraphic.AnimationState.Event += HandleAnimationStateEvent;
@@ -174,6 +185,14 @@ public class Boss : CharacterBase
        
 
         RmainBallCountForStun = requireBallCntForStunDict.FinalValue_RoundToInt;
+    }
+    protected override void SetStatusDict()
+    {
+        hpDict[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.bossDefaultHp].FloatValue;
+        attackDict[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.bossDefaultDamage].FloatValue;
+        requireBallCntForStunDict[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.requireBallCntForStun].FloatValue;
+        hpRegenWhenHideDict[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.hpRecoveryEveryTurnWhenHide].FloatValue;
+        base.SetStatusDict();
     }
     private void Start()
     {
@@ -195,7 +214,7 @@ public class Boss : CharacterBase
                 Stun--;
             }
             RemainAttackCooldown--;
-            await BallSpawnRoutine();
+            await BallSpawnRoutine(Phase);
         }
         else
         {
@@ -220,10 +239,9 @@ public class Boss : CharacterBase
                 Stun = 0;
                 RemainAttackCooldown = attackCooldownDict.FinalValue_RoundToInt;
                 RmainBallCountForStun = requireBallCntForStunDict.FinalValue_RoundToInt;
-                await BallSpawnRoutine();
+                await BallSpawnRoutine(Phase);
             }
         }
-        GameManager.Instance.SetView();
         await UniTask.Delay(1000);
         isBossTurn = false;
     }
@@ -260,7 +278,7 @@ public class Boss : CharacterBase
         var map = PoolableManager.Instance.Instantiate<BlockEditor>(mapPrefab, parentTransform: GameManager.Instance.worldCanvas.transform);
         map.transform.SetAsFirstSibling();
     }
-    private async UniTask BallSpawnRoutine()
+    private async UniTask BallSpawnRoutine(EBossPhase eBossPhase)
     {
         if (Stun > 0)
         {
@@ -269,7 +287,7 @@ public class Boss : CharacterBase
         await UniTask.WaitWhile(()=>GameManager.Instance.isWhileMapMoving);
         List<UniTask> tasks = new List<UniTask>();
         isWhileSpawnBall = true;
-        switch (Phase)
+        switch (eBossPhase)
         {
             case EBossPhase.LeftWing:
                 tasks.Add(_leftSpawnLine.PushAndSpawnBlocksInLine());
@@ -286,6 +304,7 @@ public class Boss : CharacterBase
                 break;
         }
         await UniTask.WhenAll(tasks);
+        GameManager.Instance.SetView();
         isWhileSpawnBall = false;
     }
     private void DoAttack()

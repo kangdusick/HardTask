@@ -1,3 +1,4 @@
+using CodeStage.AntiCheat.ObscuredTypes;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -19,12 +20,31 @@ public class Player : CharacterBase
 
     public Action OnPlayerTurnEnd;
 
+    public override ObscuredFloat CurrentHp
+    { 
+        get => base.CurrentHp;
+        set
+        {
+            base.CurrentHp = value;
+            if(isStatusDictInit && base.CurrentHp<=0f)
+            {
+                PoolableManager.Instance.Instantiate<PopCommon>(EPrefab.PopCommon).OpenPopup(ELanguageTable.lose.LocalIzeText(), ELanguageTable.gameEndDesc.LocalIzeText(), () => 
+                {
+                    GameUtil.Instance.LoadScene("Load");
+                });
+            }
+        }
+    }
 
-  
     protected override void Awake()
     {
         base.Awake();
         Instance = this;
+        SetStatusDict();
+        ChangeIdleAnim(EGangAnimation.GangDungeon_AnubisIdle);
+    }
+    protected override void SetStatusDict()
+    {
         fairySpawnChanceDict[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.fairyDefaultChance].FloatValue;
         fairyDamageDict[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.fairyDefaultDamage].FloatValue;
         hpDict[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.playerDefaultHp].FloatValue;
@@ -33,9 +53,8 @@ public class Player : CharacterBase
         smallBombSpawnChanceDict[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.smallBombSpawnChance].FloatValue;
         neroDirectAttackDamageDict[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.neroBallDirectDamage].FloatValue;
         stunDurationDict[(ELanguageTable.DefaultValue, EStatusType.baseValue)] = TableManager.ConfigTableDict[EConfigTable.stunDuration].FloatValue;
-        ChangeIdleAnim(EGangAnimation.GangDungeon_AnubisIdle);
+        base.SetStatusDict();
     }
-    
     public void ChangeIdleAnim(EGangAnimation idleAnim)
     {
         currentIdleAnim = idleAnim.OriginName();

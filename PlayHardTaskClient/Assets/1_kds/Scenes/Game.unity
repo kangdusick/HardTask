@@ -1229,7 +1229,6 @@ MonoBehaviour:
   ballDestroierRect: {fileID: 0}
   _shootingLineRenderer: {fileID: 101832421}
   isWhileBallShooterRoutine: 0
-  prepareBallList: []
 --- !u!1001 &442024480
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2426,6 +2425,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 411e4d30ee650b8489827fd5f0a482fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isWhileMapMoving: 0
   worldCanvas: {fileID: 0}
 --- !u!4 &1279121618
 Transform:
