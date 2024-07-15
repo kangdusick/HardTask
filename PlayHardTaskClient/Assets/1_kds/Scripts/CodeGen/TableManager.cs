@@ -15,7 +15,8 @@ public static class TableManager
       
      public static Dictionary<EConfigTable, ConfigTable> ConfigTableDict { get; private set; }  
      public static Dictionary<ELanguageTable, LanguageTable> LanguageTableDict { get; private set; }  
-     public static Dictionary<ELinkTable, LinkTable> LinkTableDict { get; private set; }
+     public static Dictionary<ELinkTable, LinkTable> LinkTableDict { get; private set; }  
+     public static Dictionary<EAbilityTable, AbilityTable> AbilityTableDict { get; private set; }
 
 
     public static void LoadTables()
@@ -40,6 +41,9 @@ public static class TableManager
                         break;                    
                     case "linkTables":
                         LinkTableDict = LoadJson<LinkTableLoader, ELinkTable, LinkTable>(item.Value.ToString()).MakeDict();
+                        break;                    
+                    case "AbilityTables":
+                        AbilityTableDict = LoadJson<AbilityTableLoader, EAbilityTable, AbilityTable>(item.Value.ToString()).MakeDict();
                         break;
                 }
             }
@@ -210,6 +214,34 @@ public enum ELanguageTable
 	phaseDesc4 = -1122876195,
 	[Description("phaseDesc5")]
 	phaseDesc5 = -1122876196,
+	[Description("ability1")]
+	ability1 = 630785368,
+	[Description("ability2")]
+	ability2 = 630785371,
+	[Description("ability3")]
+	ability3 = 630785370,
+	[Description("ability4")]
+	ability4 = 630785373,
+	[Description("ability5")]
+	ability5 = 630785372,
+	[Description("ability6")]
+	ability6 = 630785375,
+	[Description("ability7")]
+	ability7 = 630785374,
+	[Description("ability1_Desc")]
+	ability1_Desc = -1800850268,
+	[Description("ability2_Desc")]
+	ability2_Desc = -1709485111,
+	[Description("ability3_Desc")]
+	ability3_Desc = -1858231322,
+	[Description("ability4_Desc")]
+	ability4_Desc = -1766915333,
+	[Description("ability5_Desc")]
+	ability5_Desc = -1679191512,
+	[Description("ability6_Desc")]
+	ability6_Desc = -1587334323,
+	[Description("ability7_Desc")]
+	ability7_Desc = -1736080534,
 	[Description("win")]
 	win = 170379,
 	[Description("lose")]
@@ -1976,6 +2008,27 @@ public enum ELinkTable
 	
 }
 
+public enum EAbilityTable
+{
+    [Description("valueTypeDefine")]
+	valueTypeDefine = -1227803469,
+	[Description("ability1")]
+	ability1 = 630785368,
+	[Description("ability2")]
+	ability2 = 630785371,
+	[Description("ability3")]
+	ability3 = 630785370,
+	[Description("ability4")]
+	ability4 = 630785373,
+	[Description("ability5")]
+	ability5 = 630785372,
+	[Description("ability6")]
+	ability6 = 630785375,
+	[Description("ability7")]
+	ability7 = 630785374,
+	
+}
+
 
 
 
@@ -2024,6 +2077,21 @@ public class LinkTableLoader : ILoader<ELinkTable, LinkTable>
         return dataDict;
     }
 }
+[Serializable]
+public class AbilityTableLoader : ILoader<EAbilityTable, AbilityTable>
+{
+    public List<AbilityTable> AbilityTables = new List<AbilityTable>();
+
+    public Dictionary<EAbilityTable, AbilityTable> MakeDict()
+    {
+        var dataDict = new Dictionary<EAbilityTable, AbilityTable>();
+        foreach (var data in AbilityTables)
+        {
+            dataDict.Add(data.key.ParseEnum<EAbilityTable>(), data);
+        }
+        return dataDict;
+    }
+}
 
 
 [Serializable]
@@ -2050,4 +2118,13 @@ public class LinkTable
 	public string kr;
 	public string en;
 	public string LanguageKey;
+}
+[Serializable]
+public class AbilityTable
+{
+	public string key;
+	public string nameLanguageKey;
+	public string descLanguageKey;
+	public int statusType;
+	public float amount;
 }

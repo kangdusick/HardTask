@@ -150,6 +150,7 @@ public class Boss : CharacterBase
                     break;
             }
             _finalPhaseEffect.SetActive(_phase == EBossPhase.Final);
+            PoolableManager.Instance.Instantiate<PopSelectAbility>(EPrefab.PopSelectAbility).OpenPopup();
         }
     }
     private enum EReaperAnim
@@ -165,26 +166,7 @@ public class Boss : CharacterBase
     {
         base.Awake();
         Instance = this;
-        Phase = EBossPhase.Default;
-        _isCanAttack = true;
-
-        SetStatusDict();
-        OnCurrentHpChange -= PhaseChange;
-        OnCurrentHpChange += PhaseChange;
-
-        BallSpawnRoutine(EBossPhase.DoubleWing);
-
-        _skeletonGraphic.AnimationState.Event -= HandleAnimationStateEvent;
-        _skeletonGraphic.AnimationState.Event += HandleAnimationStateEvent;
-       
-        currentIdleAnim = EReaperAnim.Idle.ToString();
-
-        SetAnim(currentIdleAnim);
-        HexBlock.OnBlockDamaged -= OnBlockDamaged;
-        HexBlock.OnBlockDamaged += OnBlockDamaged;
-       
-
-        RmainBallCountForStun = requireBallCntForStunDict.FinalValue_RoundToInt;
+        
     }
     protected override void SetStatusDict()
     {
@@ -196,6 +178,28 @@ public class Boss : CharacterBase
     }
     private void Start()
     {
+        Phase = EBossPhase.Default;
+        PoolableManager.Instance.Instantiate<PopCommon>(EPrefab.PopCommon).OpenPopup(ELanguageTable.changePoint_Title.LocalIzeText(), ELanguageTable.changePoint_Desc.LocalIzeText());
+        _isCanAttack = true;
+
+        SetStatusDict();
+        OnCurrentHpChange -= PhaseChange;
+        OnCurrentHpChange += PhaseChange;
+
+        BallSpawnRoutine(EBossPhase.DoubleWing);
+
+        _skeletonGraphic.AnimationState.Event -= HandleAnimationStateEvent;
+        _skeletonGraphic.AnimationState.Event += HandleAnimationStateEvent;
+
+        currentIdleAnim = EReaperAnim.Idle.ToString();
+
+        SetAnim(currentIdleAnim);
+        HexBlock.OnBlockDamaged -= OnBlockDamaged;
+        HexBlock.OnBlockDamaged += OnBlockDamaged;
+
+
+        RmainBallCountForStun = requireBallCntForStunDict.FinalValue_RoundToInt;
+
         Player.Instance.OnPlayerTurnEnd -= OnPlayerTurnEnd;
         Player.Instance.OnPlayerTurnEnd += OnPlayerTurnEnd;
         isBossTurn = false;

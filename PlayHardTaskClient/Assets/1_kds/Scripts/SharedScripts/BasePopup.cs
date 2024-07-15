@@ -20,10 +20,6 @@ public class BasePopup : MonoBehaviour
     public virtual void OpenPopup()
     {
         Debug.Log("Open " +  gameObject.name);
-        if (GameManager.isInGame)
-        {
-            Time.timeScale = 0f;
-        }
         _isClosed = false;
         currentSortingOrder += 100;
         popupList.Add(this);
@@ -54,10 +50,6 @@ public class BasePopup : MonoBehaviour
     public virtual void OnPoolableDestroyAction()
     {
         popupList.Remove(this);
-        if (popupList.Count <= 0)
-        {
-            Time.timeScale = 1f;
-        }
         PoolableManager.Instance.DestroyWithChildren(gameObject);
     }
     protected virtual void OnDestroy()

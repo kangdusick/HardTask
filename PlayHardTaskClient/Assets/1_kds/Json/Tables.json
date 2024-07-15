@@ -201,6 +201,76 @@
         "en": "5th Phase: Final stage. Defeat the Reaper."
       },
       {
+        "key": "ability1",
+        "kr": "어빌리티1",
+        "en": "Ability 1"
+      },
+      {
+        "key": "ability2",
+        "kr": "어빌리티2",
+        "en": "Ability 2"
+      },
+      {
+        "key": "ability3",
+        "kr": "어빌리티3",
+        "en": "Ability 3"
+      },
+      {
+        "key": "ability4",
+        "kr": "어빌리티4",
+        "en": "Ability 4"
+      },
+      {
+        "key": "ability5",
+        "kr": "어빌리티5",
+        "en": "Ability 5"
+      },
+      {
+        "key": "ability6",
+        "kr": "어빌리티6",
+        "en": "Ability 6"
+      },
+      {
+        "key": "ability7",
+        "kr": "어빌리티7",
+        "en": "Ability 7"
+      },
+      {
+        "key": "ability1_Desc",
+        "kr": "스턴에 필요한 구슬 개수 {0}",
+        "en": "Number of Orbs Needed for Stun {0}"
+      },
+      {
+        "key": "ability2_Desc",
+        "kr": "네로의 구슬 필요 개수 {0}",
+        "en": "Number of Orbs Needed for Nero {0}"
+      },
+      {
+        "key": "ability3_Desc",
+        "kr": "요정 공격력  {0}",
+        "en": "Fairy Attack Power {0}"
+      },
+      {
+        "key": "ability4_Desc",
+        "kr": "구슬에 요정 붙을 확률  {0}",
+        "en": "Probability of Fairy Sticking to Orbs {0}"
+      },
+      {
+        "key": "ability5_Desc",
+        "kr": "보스 공격 쿨타임  {0}",
+        "en": "Boss Attack Cooldown {0}"
+      },
+      {
+        "key": "ability6_Desc",
+        "kr": "아누비스 체력 {0}",
+        "en": "Anubis Health {0}"
+      },
+      {
+        "key": "ability7_Desc",
+        "kr": "스턴 지속시간  {0}",
+        "en": "Stun Duration {0}"
+      },
+      {
         "key": "win",
         "kr": "승리",
         "en": "Win"
@@ -4612,6 +4682,66 @@
         "kr": "검은 모이",
         "en": "black feed",
         "LanguageKey": "blackfeedLink"
+      }
+    ]
+  },
+  "AbilityTable": {
+    "AbilityTables": [
+      {
+        "key": "valueTypeDefine",
+        "nameLanguageKey": "valueTypeDefine",
+        "descLanguageKey": "valueTypeDefine",
+        "statusType": 1,
+        "amount": 1.1
+      },
+      {
+        "key": "ability1",
+        "nameLanguageKey": "ability1",
+        "descLanguageKey": "ability1_Desc",
+        "statusType": 0,
+        "amount": 1
+      },
+      {
+        "key": "ability2",
+        "nameLanguageKey": "ability2",
+        "descLanguageKey": "ability2_Desc",
+        "statusType": 0,
+        "amount": 5
+      },
+      {
+        "key": "ability3",
+        "nameLanguageKey": "ability3",
+        "descLanguageKey": "ability3_Desc",
+        "statusType": 0,
+        "amount": 5
+      },
+      {
+        "key": "ability4",
+        "nameLanguageKey": "ability4",
+        "descLanguageKey": "ability4_Desc",
+        "statusType": 0,
+        "amount": 10
+      },
+      {
+        "key": "ability5",
+        "nameLanguageKey": "ability5",
+        "descLanguageKey": "ability5_Desc",
+        "statusType": 0,
+        "amount": 1
+      },
+      {
+        "key": "ability6",
+        "nameLanguageKey": "ability6",
+        "descLanguageKey": "ability6_Desc",
+        "statusType": 3,
+        "amount": 500
+      },
+      {
+        "key": "ability7",
+        "nameLanguageKey": "ability7",
+        "descLanguageKey": "ability7_Desc",
+        "statusType": 0,
+        "amount": 1
       }
     ]
   }

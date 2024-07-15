@@ -35,7 +35,6 @@ public class GameManager : MonoBehaviour
             Camera.main.orthographicSize = 820f;
         }
         worldCanvas = GameObject.FindGameObjectWithTag(ETag.WorldCanvas.ToString()).GetComponent<Canvas>();
-        PoolableManager.Instance.Instantiate<PopCommon>(EPrefab.PopCommon).OpenPopup(ELanguageTable.changePoint_Title.LocalIzeText(),ELanguageTable.changePoint_Desc.LocalIzeText());
     }
     public void SetView()
     {
