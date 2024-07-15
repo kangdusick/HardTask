@@ -291,6 +291,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _hpBar: {fileID: 0}
+  _skeletonGraphic: {fileID: 4747070076613739442}
   LostHpRate:
     migratedVersion: 
     currentCryptoKey: 1065561770
@@ -315,10 +316,12 @@ MonoBehaviour:
     fakeValue: 0
     fakeValueActive: 0
     inited: 1
+  currentIdleAnim: 
+  isBossTurn: 0
   _weaponEdgeRect: {fileID: 4673084772207121127}
   _leftSpawnLine: {fileID: 2916808566675939462}
   _rightSpawnLine: {fileID: 2080251025625897489}
-  _skeletonGraphic: {fileID: 4747070076613739442}
+  _finalPhaseEffect: {fileID: 0}
   _attackCooldownText: {fileID: 0}
   _stunText: {fileID: 0}
 --- !u!1 &6457077291352342961
@@ -467,8 +470,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 646100a90d4b91f42abdee88c8103f63, type: 3}
-  m_Type: 0
+  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+  m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
