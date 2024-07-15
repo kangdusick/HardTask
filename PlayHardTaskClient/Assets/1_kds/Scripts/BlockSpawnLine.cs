@@ -53,6 +53,10 @@ public class BlockSpawnLine : MonoBehaviour
         List<UniTask> moveTaskList= new List<UniTask>();
         while (true)  //스폰 라인에 빈 공간이 있으면 한칸씩 이동 후 구슬 하나 생성
         {
+            if (_spawnPointHexBlockContainer == null)
+            {
+                return;
+            }
             moveTaskList.Clear();
             int headIndex = FindHeadIndexFromSpawnPointInLine();
             if(headIndex == _spawnLineHexBlockContainerList.Count -1)
@@ -79,6 +83,7 @@ public class BlockSpawnLine : MonoBehaviour
             }
             moveTaskList.Add(spawnedBlock.SetHexBlockContainerWithMove(_spawnLineHexBlockContainerList[0], _newBlockMoveSpeed));
             await UniTask.WhenAll(moveTaskList);
+           
         }
         _isWhileSpawningCnt--;
     }

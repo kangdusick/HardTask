@@ -16,7 +16,7 @@ public class GameManager : MonoBehaviour
     public bool IsCanMouseClick => !BallShooter.Instance.isWhileBallShooterRoutine && !BlockSpawnLine.IsWhileBallSpawning && !Boss.Instance.isBossTurn && !isWhileMapMoving;
     public bool isWhileMapMoving;
     public Canvas worldCanvas;
-
+    private bool _isGameEnd;
     private void Awake()
     {
         Application.targetFrameRate = 60;
@@ -76,5 +76,17 @@ public class GameManager : MonoBehaviour
         descStringBuilderText.Append($"attackCooldown: {Boss.Instance.attackCooldownDict.FinalValueDescription}\n");
         descStringBuilderText.Append($"hpRegenWhenHide: {Boss.Instance.hpRegenWhenHideDict.FinalValueDescription}\n");
         PoolableManager.Instance.Instantiate<PopCommon>(EPrefab.PopCommon).OpenPopup(ELanguageTable.DetailInformation.LocalIzeText(), descStringBuilderText.ToString());
+    }
+    public void GameEnd(ELanguageTable title)
+    {
+        if(_isGameEnd)
+        {
+            return;
+        }
+        _isGameEnd = true;
+        PoolableManager.Instance.Instantiate<PopCommon>(EPrefab.PopCommon).OpenPopup(title.LocalIzeText(), ELanguageTable.gameEndDesc.LocalIzeText(), () =>
+        {
+            GameUtil.Instance.LoadScene("Load");
+        });
     }
 }

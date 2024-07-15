@@ -100,10 +100,7 @@ public class Boss : CharacterBase
             base.CurrentHp = value;
             if (isStatusDictInit && base.CurrentHp <= 0f)
             {
-                PoolableManager.Instance.Instantiate<PopCommon>(EPrefab.PopCommon).OpenPopup(ELanguageTable.win.LocalIzeText(), ELanguageTable.gameEndDesc.LocalIzeText(), () =>
-                {
-                    GameUtil.Instance.LoadScene("Load");
-                });
+                GameManager.Instance.GameEnd(ELanguageTable.win);
             }
         }
     }

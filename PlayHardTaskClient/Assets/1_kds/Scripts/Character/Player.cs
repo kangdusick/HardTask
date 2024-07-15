@@ -28,10 +28,7 @@ public class Player : CharacterBase
             base.CurrentHp = value;
             if(isStatusDictInit && base.CurrentHp<=0f)
             {
-                PoolableManager.Instance.Instantiate<PopCommon>(EPrefab.PopCommon).OpenPopup(ELanguageTable.lose.LocalIzeText(), ELanguageTable.gameEndDesc.LocalIzeText(), () => 
-                {
-                    GameUtil.Instance.LoadScene("Load");
-                });
+                GameManager.Instance.GameEnd(ELanguageTable.lose);
             }
         }
     }
